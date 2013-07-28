@@ -1,9 +1,10 @@
 package imageprocessing.geometry.houghtransform;
 
-import java.awt.Point;
+import imageprocessing.geometry.Line;
+import imageprocessing.geometry.Point;
+
 import java.awt.image.BufferedImage;
 import java.util.Comparator;
-import java.util.List;
 
 public class HoughLine {
 
@@ -76,36 +77,39 @@ public class HoughLine {
 		this.y = y;
 		rho = rhoBase + y;
 	}
-	
-	public Point[] getImageLine(int imgW, int imgH){
-		Point[] result = new Point[2];
+
+	public Line getLine(double width, double height){
+		Point[] points = new Point[2];
 		double sint = Math.sin(theta * Math.PI / 180), cost = Math
 				.cos(theta * Math.PI / 180);
 		
-		double y1 = Math.floor(rho / sint);
-		y1 = (y1 <= imgH && y1 >= 0) ? y1 : -1;
-		double y2 = Math.floor((rho - imgW * cost) / sint);
-		y2 = (y2 <= imgH && y2 >= 0) ? y2 : -1;
-		double x1 = Math.floor(rho / cost);
-		x1 = (x1 <= imgW && x1 >= 0) ? x1 : -1;
-		double x2 = Math.floor((rho - imgH * sint) / cost);
-		x2 = (x2 <= imgW && x2 >= 0) ? x2 : -1;
+		double y1 = rho / sint;
+		y1 = (y1 <= height && y1 >= 0) ? y1 : -1;
+		double y2 = (rho - width * cost) / sint;
+		y2 = (y2 <= height && y2 >= 0) ? y2 : -1;
+		double x1 = rho / cost;
+		x1 = (x1 <= width && x1 >= 0) ? x1 : -1;
+		double x2 = (rho - height * sint) / cost;
+		x2 = (x2 <= width && x2 >= 0) ? x2 : -1;
 		
 		int p = 0;
 		if (y1 != -1) {
-			result[p++] = new Point(0, (int) Math.round(y1));
+			points[p++] = new Point(0, y1);
 		}
 		if (y2 != -1) {
-			result[p++] = new Point(imgW, (int) Math.round(y2));
+			points[p++] = new Point(width, y2);
 
 		}
 		if (x1 != -1 && p < 2) {
-			result[p++] = new Point((int) Math.round(x1), 0);
+			points[p++] = new Point(x1, 0);
 		}
 		if (x2 != -1 && p < 2) {
-			result[p++] = new Point((int) Math.round(x2), imgH);
+			points[p++] = new Point(x2, height);
 		}
-		return result;
+		
+		if(points[0] != null && points[1] != null) return new Line(points[0], points[1]);
+			
+		return null;
 	}
 	
 	public Point intersection(HoughLine h){

@@ -1,5 +1,9 @@
 package imageprocessing.geometry;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
 public final class Geo {
 
 	private Geo() {
@@ -70,4 +74,17 @@ public final class Geo {
 		return false;
 	}
 	
+	public static boolean intersect(Line l, Polygon poly, List<Point> points){
+		int nPoints = poly.getPoints().size();
+		Point p = new Point();
+		boolean r = false;
+		for(int i = 0; i < nPoints; i++){
+			if(intersect(l, poly.getSegment(i), p)){
+				r = true;
+				points.add(new Point(p));
+			}
+		}
+		
+		return r;
+	}
 }
