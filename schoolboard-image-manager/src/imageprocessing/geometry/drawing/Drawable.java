@@ -9,19 +9,27 @@ import java.awt.Rectangle;
 public abstract class Drawable {
 	
 	protected Rectangle clipBounds;
+	protected Point origin = new Point(0,0);
+	protected Color color = Color.RED;
 	
 	public final void draw(Graphics g){
-		Color prevColor = g.getColor();
+		
 		if(clipBounds == null || !clipBounds.equals(g.getClipBounds())){
 			clipBounds = new Rectangle(g.getClipBounds());
-			resetPoints();
-		}		
+			resetAWTPoints();
+		}
+		Color prevColor = g.getColor();
+		g.setColor(color);
 		drawObject(g);
 		g.setColor(prevColor);
 	}
 	
-	protected void resetPoints(){
+	protected void resetAWTPoints(){
 		
+	}
+	
+	public void setColor(Color color){
+		this.color = color;
 	}
 	
 	protected abstract void drawObject(Graphics g);

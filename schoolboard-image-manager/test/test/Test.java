@@ -4,7 +4,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
-public class Util {
+public class Test {
 
 	public static void showComponent(JComponent comp, String title){
 		JScrollPane sp = new JScrollPane();

@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import test.Util;
+import test.Test;
 import testJcomps.GeometryComponent;
 
 public class DrawingTest {
@@ -56,7 +56,7 @@ public class DrawingTest {
 			gc.addDrawable(dps[i]);
 		}
 
-		Util.showComponent(gc, " polygon line intersection ");
+		Test.showComponent(gc, " polygon line intersection ");
 
 	}
 

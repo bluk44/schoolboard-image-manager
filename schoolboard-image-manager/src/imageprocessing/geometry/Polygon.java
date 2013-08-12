@@ -35,6 +35,10 @@ public class Polygon {
 		return points.get(i);
 	}
 	
+	public void setPoint(int i, Point p){
+		points.set(i, p);
+	}
+	
 	public Segment getSegment(int i){
 		Point p1 = points.get(i);
 		Point p2 = null;

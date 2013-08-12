@@ -1,17 +1,17 @@
-package test;
-import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
+package imageprocessing.boundsdetection;
+import imageprocessing.Util;
+
+import java.awt.image.BufferedImage;
+
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
-import javax.swing.LayoutStyle;
-
-import javax.swing.WindowConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+
+import testJcomps.ImageComponent;
+import testJcomps.TransformationTestComp;
 
 
 /**
@@ -26,36 +26,43 @@ import javax.swing.SwingUtilities;
 * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
-public class NewJFrame extends javax.swing.JFrame {
+public class TransformationTest extends javax.swing.JFrame {
 	private JScrollPane jScrollPane1;
 	private JButton jButton1;
 	private JButton diss;
-
+	
+	private BufferedImage image = Util.readFromFile("images/rect_detection/whiteboard01.png");
+	private	TransformationTestComp ttc = new TransformationTestComp(image);
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
 	public static void main(String[] args) {
+		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				NewJFrame inst = new NewJFrame();
+				TransformationTest inst = new TransformationTest();
 				inst.setLocationRelativeTo(null);
 				inst.setVisible(true);
 			}
 		});
+
 	}
 	
-	public NewJFrame() {
+	public TransformationTest() {
 		super();
 		initGUI();
 	}
 	
 	private void initGUI() {
+
+		
 		try {
 			GroupLayout thisLayout = new GroupLayout((JComponent)getContentPane());
 			setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			getContentPane().setLayout(thisLayout);
 			{
 				jScrollPane1 = new JScrollPane();
+				jScrollPane1.setViewportView(ttc);
 			}
 			{
 				diss = new JButton();
@@ -89,5 +96,5 @@ public class NewJFrame extends javax.swing.JFrame {
 			e.printStackTrace();
 		}
 	}
-
+	
 }

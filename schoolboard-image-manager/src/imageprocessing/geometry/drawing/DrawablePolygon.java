@@ -1,5 +1,7 @@
 package imageprocessing.geometry.drawing;
 
+import imageprocessing.geometry.Geo;
+import imageprocessing.geometry.Point;
 import imageprocessing.geometry.Polygon;
 
 import java.awt.Color;
@@ -14,19 +16,24 @@ public class DrawablePolygon extends Drawable {
 		this.poly = poly;
 	}
 	
+	public void setPoint(int i, Point p){
+		poly.setPoint(i, p);
+		resetAWTPoints();
+	}
+	
 	@Override
-	protected void resetPoints() {
+	protected void resetAWTPoints() {
 		int nPoints = poly.getPoints().size();
 		polyPoints = new java.awt.Point[nPoints];
 		for (int i = 0; i < nPoints; i++) {
-			polyPoints[i] = getAwtPoint(poly.getPoint(i));
+			Point p = Geo.add(origin, poly.getPoint(i));
+			polyPoints[i] = getAwtPoint(p);
 		}
 	}
 	
 	@Override
 	protected void drawObject(Graphics g) {
 		for(int i = 0; i < polyPoints.length - 1; i++){
-			g.setColor(Color.MAGENTA);
 			g.drawLine(polyPoints[i].x, polyPoints[i].y, polyPoints[i+1].x, polyPoints[i+1].y);
 			g.fillOval(polyPoints[i].x - 1, polyPoints[i].y - 1, 2, 2);
 			g.fillOval(polyPoints[i+1].x - 1, polyPoints[i+1].y - 1, 2, 2);

@@ -25,7 +25,7 @@ public class DrawableLine extends Drawable {
 	}
 	
 	@Override
-	protected void resetPoints() {
+	protected void resetAWTPoints() {
 		Line[] bLines = new Line[4];
 		bLines[0] = new Line(new Point(0, 0), new Point(0, 1));
 		bLines[1] = new Line(new Point(clipBounds.getWidth(), 0), new Point(clipBounds.getWidth(), 1));
