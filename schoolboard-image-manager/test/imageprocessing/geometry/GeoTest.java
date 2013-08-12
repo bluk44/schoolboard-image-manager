@@ -7,7 +7,8 @@ public class GeoTest {
 	 */
 	public static void main(String[] args) {
 	//	betweenTest();
-		intersectSegSegTest();
+	//	intersectSegSegTest();
+		distTest();
 	}
 	
 	public static void betweenTest(){
@@ -25,5 +26,9 @@ public class GeoTest {
 		System.out.println(b);
 	}
 	
-	
+	public static void distTest(){
+		Point p1 = new Point(1,1), p2 = new Point(1,2);
+		System.out.println(Geo.dist(p1, p2));
+		
+	}
 }
