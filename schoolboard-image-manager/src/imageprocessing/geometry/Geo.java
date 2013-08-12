@@ -47,6 +47,14 @@ public final class Geo {
 		return new Line(new Point(a), new Point(d.y, -d.x).add(a));
 	}
 	
+	public static double lgt(Point p){
+		return Math.sqrt(dp(p, p));
+	}
+	
+	public static double dist(Point a, Point b){
+		return lgt(sub(a,b));
+	}
+	
 	public static boolean between(Point a, Point m, Point b){
 		if(!parallel(sub(m, a), sub(b, a))) return false;
 		return (dp(sub(m, a), sub(m, b)) < EPS); 
