@@ -21,6 +21,10 @@ public class DrawablePolygon extends Drawable {
 		resetAWTPoints();
 	}
 	
+	public Point getPoint(int i){
+		return poly.getPoint(i);
+	}
+	
 	@Override
 	protected void resetAWTPoints() {
 		int nPoints = poly.getPoints().size();
