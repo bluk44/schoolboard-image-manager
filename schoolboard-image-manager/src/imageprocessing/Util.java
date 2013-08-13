@@ -1,9 +1,13 @@
 package imageprocessing;
 
 
+import ij.process.ByteProcessor;
+import ij.process.ColorProcessor;
+import ij.process.ImageProcessor;
 import imageprocessing.matrix.MatrixB;
 import imageprocessing.matrix.MatrixI;
 
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
@@ -48,19 +52,23 @@ public abstract class Util {
 		}
 	}
 	
-//	public static ImageProcessor convertToImageProcessor(BufferedImage source){
-//		int numBands = source.getData().getNumBands();
-//		ImageProcessor ip = null;
-//		switch(numBands){
-//		case 1:
-//			ip = new ByteProcessor(source);
-//			break;
-//		case 4:
-//			ip = new ColorProcessor(source);
-//		}
-//		ip.setRoi(new Rectangle(source.getWidth(), source.getHeight()));
-//		return ip;
-//	}
+	public static ImageProcessor convertToImageProcessor(BufferedImage source){
+		int numBands = source.getData().getNumBands();
+		ImageProcessor ip = null;
+		switch(numBands){
+		case 1:
+			ip = new ByteProcessor(source);
+			break;
+		case 3:
+			ip = new ColorProcessor(source);
+			break;
+		case 4:
+			ip = new ColorProcessor(source);
+			break;			
+		}
+		ip.setRoi(new Rectangle(source.getWidth(), source.getHeight()));
+		return ip;
+	}
 	
 	public static MatrixI grayToMatrixI(BufferedImage grayscaleImg){
 		MatrixI matrix = new MatrixI(grayscaleImg.getWidth(), grayscaleImg.getHeight());
