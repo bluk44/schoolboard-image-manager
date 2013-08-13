@@ -8,7 +8,7 @@ import java.util.Comparator;
 
 public class HoughLine {
 
-	private double rho, theta;
+	private double rho, theta; // theta 0 - 179
 	private int val;
 	private int rhoBase;
 	private int x, y;
@@ -83,32 +83,36 @@ public class HoughLine {
 		double sint = Math.sin(theta * Math.PI / 180), cost = Math
 				.cos(theta * Math.PI / 180);
 		
-		double y1 = rho / sint;
-		y1 = (y1 <= height && y1 >= 0) ? y1 : -1;
-		double y2 = (rho - width * cost) / sint;
-		y2 = (y2 <= height && y2 >= 0) ? y2 : -1;
-		double x1 = rho / cost;
-		x1 = (x1 <= width && x1 >= 0) ? x1 : -1;
-		double x2 = (rho - height * sint) / cost;
-		x2 = (x2 <= width && x2 >= 0) ? x2 : -1;
-		
-		int p = 0;
-		if (y1 != -1) {
-			points[p++] = new Point(0, y1);
-		}
-		if (y2 != -1) {
-			points[p++] = new Point(width, y2);
-
-		}
-		if (x1 != -1 && p < 2) {
-			points[p++] = new Point(x1, 0);
-		}
-		if (x2 != -1 && p < 2) {
-			points[p++] = new Point(x2, height);
-		}
-		
-		if(points[0] != null && points[1] != null) return new Line(points[0], points[1]);
+		if(cost == 0 && rho >= 0 && rho <= height){
+			return new Line(rho, 0, rho, 1);
+		} else {
+			double y1 = rho / sint;
+			y1 = (y1 <= height && y1 >= 0) ? y1 : -1;
+			double y2 = (rho - width * cost) / sint;
+			y2 = (y2 <= height && y2 >= 0) ? y2 : -1;
+			double x1 = rho / cost;
+			x1 = (x1 <= width && x1 >= 0) ? x1 : -1;
+			double x2 = (rho - height * sint) / cost;
+			x2 = (x2 <= width && x2 >= 0) ? x2 : -1;
 			
+			int p = 0;
+			if (y1 != -1) {
+				points[p++] = new Point(0, y1);
+			}
+			if (y2 != -1) {
+				points[p++] = new Point(width, y2);
+
+			}
+			if (x1 != -1 && p < 2) {
+				points[p++] = new Point(x1, 0);
+			}
+			if (x2 != -1 && p < 2) {
+				points[p++] = new Point(x2, height);
+			}
+			
+			if(points[0] != null && points[1] != null) return new Line(points[0], points[1]);
+		}
+		
 		return null;
 	}
 	
