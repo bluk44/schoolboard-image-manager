@@ -8,6 +8,7 @@ import imageprocessing.geometry.drawing.DrawableBSegment;
 import imageprocessing.geometry.drawing.DrawablePerimeter;
 import imageprocessing.geometry.houghtransform.HoughLine;
 import imageprocessing.geometry.houghtransform.HoughMatrix;
+import imageprocessing.geometry.houghtransform.HoughTransform;
 import imageprocessing.matrix.MatrixB;
 
 import java.awt.Color;
@@ -22,12 +23,6 @@ import testJcomps.BDTestComp;
 
 public class BoundsDetectionTest {
 	
-	private static int THETA_VERTICAL = 30;
-	private static int THETA_HORIZONTAL = 30;
-	
-	private static int RHO_NHOOD = 5;
-	private static int THETA_NHOOD = 30;
-	
 	/**
 	 * @param args
 	 */
@@ -38,12 +33,11 @@ public class BoundsDetectionTest {
 		
 		MatrixB edges = Util.grayToMatrixB(bi, 0);
 		
-		// create hough matrix
-		HoughMatrix hm = new HoughMatrix(edges);
-		BDTestComp comp = new BDTestComp(bi);
+		// hpugh transform
+		HoughTransform ht = new HoughTransform(edges);
 		
-		List<HoughLine> vlines = hm.getVerticalLines(6, 5, THETA_HORIZONTAL, RHO_NHOOD, THETA_NHOOD);
-		List<HoughLine> hlines = hm.getHorizontalLines(6, 5, THETA_VERTICAL, RHO_NHOOD, THETA_NHOOD);
+		List<HoughLine> vlines = ht.getVerticalHoughLines(6);
+		List<HoughLine> hlines = ht.getHorizontalHoughLines(6);
 		List<DrawableBLine> vblines = new ArrayList<DrawableBLine>(vlines.size());
 		List<DrawableBLine> hblines = new ArrayList<DrawableBLine>(hlines.size());
 		
