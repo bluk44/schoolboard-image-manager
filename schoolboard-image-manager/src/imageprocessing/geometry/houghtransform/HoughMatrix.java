@@ -46,7 +46,6 @@ public class HoughMatrix extends MatrixI {
 		
 		super(180, sizeY);
 		rho0Idx = (sizeY - 1) / 2;
-		// TODO Auto-generated constructor stub
 	}
 	
 	public double getRho(int y){
@@ -120,13 +119,13 @@ public class HoughMatrix extends MatrixI {
 		setElement(getThetaIdx(theta), getRhoIdx(rho), val);
 	}
 	
-	public List<HoughLine> getVerticalLines(int nLines, int t, double thetaVlimit, int rw, int rh){
+	public List<HoughLine> getVerticalLines(int nLines, int minVotes, double thetaVlimit, int rw, int rh){
 		int[] dataCopy = Arrays.copyOf(data, data.length);
 		for(int i = 0; i < sizeY; i++){
 			for(int j = 0; j < sizeX; j++){
 				double theta = j;
 				int v = getElement(j, i);
-				if((!(theta >= 0 && theta < thetaVlimit) && !(theta >= 180 - thetaVlimit && theta < 180)) || (v < t)){
+				if((!(theta >= 0 && theta < thetaVlimit) && !(theta >= 180 - thetaVlimit && theta < 180)) || (v < minVotes)){
 					setElement(j,i,0);
 				}
 				
@@ -150,7 +149,7 @@ public class HoughMatrix extends MatrixI {
 		return vLines;
 	}
 	
-	public List<HoughLine> getHorizontalLines(int nLines, int t, double thetaHLimit, int rw, int rh){
+	public List<HoughLine> getHorizontalLines(int nLines, int minVotes, double thetaHLimit, int rw, int rh){
 		int[] dataCopy = Arrays.copyOf(data, data.length);
 		double lowTheta = 90 - thetaHLimit, hiTheta = 90 + thetaHLimit;
 		if(lowTheta < 0 ) lowTheta = 0;
@@ -159,7 +158,7 @@ public class HoughMatrix extends MatrixI {
 		int lowThetaIdx = (int) Math.round(lowTheta), hiThetaIdx = (int) Math.round(hiTheta);
 		for(int i = 0; i < sizeY; i++){
 			for(int j = 0; j < sizeX; j++){
-				if(!(j >= lowThetaIdx && j <= hiThetaIdx) || getElement(j, i) < t){
+				if(!(j >= lowThetaIdx && j <= hiThetaIdx) || getElement(j, i) < minVotes){
 					setElement(j, i, 0);
 				}
 			}

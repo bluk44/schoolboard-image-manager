@@ -2,6 +2,7 @@ package imageprocessing.geometry.houghtransform;
 
 import imageprocessing.geometry.Line;
 import imageprocessing.geometry.Point;
+import imageprocessing.geometry.Segment;
 
 import java.awt.image.BufferedImage;
 import java.util.Comparator;
@@ -78,13 +79,13 @@ public class HoughLine {
 		rho = rhoBase + y;
 	}
 
-	public Line getLine(double width, double height){
+	public Segment getSegment(double width, double height){
 		Point[] points = new Point[2];
 		double sint = Math.sin(theta * Math.PI / 180), cost = Math
 				.cos(theta * Math.PI / 180);
 		
 		if(cost == 0 && rho >= 0 && rho <= height){
-			return new Line(rho, 0, rho, 1);
+			return new Segment(rho, 0, rho, height - 1);
 		} else {
 			double y1 = rho / sint;
 			y1 = (y1 <= height && y1 >= 0) ? y1 : -1;
@@ -110,7 +111,7 @@ public class HoughLine {
 				points[p++] = new Point(x2, height);
 			}
 			
-			if(points[0] != null && points[1] != null) return new Line(points[0], points[1]);
+			if(points[0] != null && points[1] != null) return new Segment(points[0], points[1]);
 		}
 		
 		return null;

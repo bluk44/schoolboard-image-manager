@@ -34,10 +34,19 @@ public abstract class Drawable {
 	
 	protected abstract void drawObject(Graphics g);
 	
-	protected java.awt.Point getAwtPoint(Point p){
+	public static java.awt.Point getAwtPoint(Point p){
 		
 		int x = (int) Math.round(p.x);
 		int y = (int) Math.round(p.y);
 		return new java.awt.Point(x, y);
+	}
+
+	public Point getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(Point origin) {
+		this.origin = origin;
+		resetAWTPoints();
 	}
 }

@@ -19,13 +19,14 @@ public class DrawableLine extends Drawable {
 	
 	@Override
 	protected void drawObject(Graphics g) {
-		g.setColor(Color.BLUE);
 		g.drawLine(rectPoints[0].x, rectPoints[0].y, rectPoints[1].x, rectPoints[1].y);
 		
 	}
 	
 	@Override
 	protected void resetAWTPoints() {
+		if(clipBounds == null) return;
+		
 		Line[] bLines = new Line[4];
 		bLines[0] = new Line(new Point(0, 0), new Point(0, 1));
 		bLines[1] = new Line(new Point(clipBounds.getWidth(), 0), new Point(clipBounds.getWidth(), 1));
@@ -33,6 +34,8 @@ public class DrawableLine extends Drawable {
 		bLines[3] = new Line(new Point(0, clipBounds.getHeight()), new Point(1, clipBounds.getHeight()));
 		
 		Point p = new Point();
+		Line line = new Line(this.line);
+		line.add(origin);
 		int w = clipBounds.width, h = clipBounds.height, idx = 0;
 		for (int i = 0; i < bLines.length; i++) {
 			if(Geo.intersect(line, bLines[i], p) && p.x >= 0 && p.x <= w && p.y >= 0 && p.y <= h){

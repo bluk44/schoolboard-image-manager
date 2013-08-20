@@ -1,5 +1,6 @@
 package testJcomps;
 
+import imageprocessing.geometry.Geo;
 import imageprocessing.geometry.Point;
 import imageprocessing.geometry.Polygon;
 import imageprocessing.geometry.drawing.DrawablePolygon;
@@ -14,24 +15,26 @@ import javax.swing.JComponent;
 public class TransformationTestComp extends JComponent{
 	
 	protected BufferedImage image;
-	protected DrawablePolygon dis, fix;
+	public DrawablePolygon dis, fix;
+	
+	public TransformationTestComp(){};
 	
 	public TransformationTestComp(BufferedImage image){
 		this.image = image;
-		dis = new DrawablePolygon(new Polygon(new Point (50, 50), new Point(100, 50), 
-				new Point(100, 100), new Point(50, 100)));
+		dis = new DrawablePolygon(new Polygon(new Point (102, 127), new Point(535, 110), 
+				new Point(535, 437), new Point(99, 405)));
 		dis.setColor(Color.BLUE);
 		
-		fix = new DrawablePolygon(new Polygon(new Point (50, 50), new Point(100, 50), 
-				new Point(100, 100), new Point(50, 100)));
+		fix = new DrawablePolygon(new Polygon(new Point (100, 125), new Point(535, 125), 
+				new Point(535, 405), new Point(100, 405)));
 	}
 	
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		g.drawImage(image, 0, 0, null);
-		dis.draw(g);
-		fix.draw(g);
+		if(image != null) g.drawImage(image, 0, 0, null);
+		if(dis != null) dis.draw(g);
+		if(fix != null) fix.draw(g);
 	}
 	
 	public void print(){
@@ -54,6 +57,41 @@ public class TransformationTestComp extends JComponent{
 			return;
 		}
 		setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
+	}
+	
+	public void updateDis(Point p){
+		double minLength = 999999999, length = 0; 
+		int	i = 0, idx = 0;
+		for(int k = 0; k < 4; k++){
+			length = Geo.dist(dis.getPoint(k), p);
+			if(length < minLength){
+				minLength = length;
+				idx = k;
+			}
+			
+		}
+		
+		dis.setPoint(idx, p);
 		repaint();
+	}
+	
+	public void updateFix(Point p){
+		double minLength = 999999999, length = 0; 
+		int	i = 0, idx = 0;
+		for(int k = 0; k < 4; k++){
+			length = Geo.dist(fix.getPoint(k), p);
+			if(length < minLength){
+				minLength = length;
+				idx = k;
+			}
+			
+		}
+		
+		fix.setPoint(idx, p);
+		repaint();
+	}
+	
+	public Polygon getDistorted(){
+		return dis.getPolygon();
 	}
 }

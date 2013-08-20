@@ -24,6 +24,11 @@ public class MatrixB {
 		}
 	}
 	
+	public boolean getElementSafe(int x, int y){
+		if(x < sizeX && y < sizeY && x >= 0 && y >= 0) return getElement(x,y);
+		else return false;
+	}
+	
 	public boolean getElement(int x, int y){
 		return data[y*sizeX+x];
 	}

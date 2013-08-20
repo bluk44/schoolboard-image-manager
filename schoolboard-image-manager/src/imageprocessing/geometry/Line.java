@@ -8,10 +8,19 @@ public class Line {
 	public Line(double x1, double y1, double x2, double y2){
 		this(new Point(x1, y1), new Point(x2, y2));
 	}
-	
+
 	public Line(Point a, Point b){
 		this.o = a;
 		this.dir = b.sub(a);
+	}
+	
+	public Line(Line line){
+		this.o = new Point(line.o);
+		this.dir = new Point(line.dir);
+	}
+	
+	public void add(Point p){
+		this.o.add(p);
 	}
 	
 	@Override

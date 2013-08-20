@@ -2,7 +2,6 @@ package imageprocessing.color;
 
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
-import imageprocessing.comp.RowProfileComp;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -176,33 +175,33 @@ public class ColorConversion {
 		return rgbImage;
 	}
 	
-	public static BufferedImage subtractBackground(BufferedImage src, BufferedImage bg){
-
-		double[][] samplesHSV = ColorConversion.rgb2hsv(src);
-		
-		double[] Vchan = new double[bg.getWidth()*bg.getHeight()];
-		bg.getRaster().getSamples(0, 0, bg.getWidth(), bg.getHeight(), 0, Vchan);
-		
-		double mean = 0;
-		for (int i = 0; i < Vchan.length; i++) {
-			mean += Vchan[i];
-		}
-		mean /= Vchan.length;
-		for(int i = 0; i < samplesHSV[2].length; i++){
-			samplesHSV[2][i] = samplesHSV[2][i] - Vchan[i] + mean;
-		}
-		
-		int[] out132 = new int[src.getWidth()];
-		for(int i = 0; i < src.getWidth(); i++){
-			out132[i] = (int) Math.round(samplesHSV[2][132*src.getWidth()+i]);
-		}
-		JFrame frame2 = new JFrame("row 132 out profile");
-		RowProfileComp rp = new RowProfileComp(out132);
-
-		frame2.add(rp);
-		frame2.pack();
-		frame2.setVisible(true);
-		return hsv2rgb(samplesHSV, src.getWidth(), src.getHeight(), src.getType());
-
-	}
+//	public static BufferedImage subtractBackground(BufferedImage src, BufferedImage bg){
+//
+//		double[][] samplesHSV = ColorConversion.rgb2hsv(src);
+//		
+//		double[] Vchan = new double[bg.getWidth()*bg.getHeight()];
+//		bg.getRaster().getSamples(0, 0, bg.getWidth(), bg.getHeight(), 0, Vchan);
+//		
+//		double mean = 0;
+//		for (int i = 0; i < Vchan.length; i++) {
+//			mean += Vchan[i];
+//		}
+//		mean /= Vchan.length;
+//		for(int i = 0; i < samplesHSV[2].length; i++){
+//			samplesHSV[2][i] = samplesHSV[2][i] - Vchan[i] + mean;
+//		}
+//		
+//		int[] out132 = new int[src.getWidth()];
+//		for(int i = 0; i < src.getWidth(); i++){
+//			out132[i] = (int) Math.round(samplesHSV[2][132*src.getWidth()+i]);
+//		}
+//		JFrame frame2 = new JFrame("row 132 out profile");
+//		RowProfileComp rp = new RowProfileComp(out132);
+//
+//		frame2.add(rp);
+//		frame2.pack();
+//		frame2.setVisible(true);
+//		return hsv2rgb(samplesHSV, src.getWidth(), src.getHeight(), src.getType());
+//
+//	}
 }

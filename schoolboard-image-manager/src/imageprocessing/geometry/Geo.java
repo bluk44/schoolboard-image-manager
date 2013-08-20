@@ -26,11 +26,11 @@ public final class Geo {
 	public static Point mlt(Point p, double d) {
 		return new Point(p.x * d, p.y * d);
 	}
-
+	// wektorowy
 	public static double cp(Point p1, Point p2) {
 		return p1.x * p2.y - p1.y * p2.x;
 	}
-	
+	// skalarny
 	public static double dp(Point p1, Point p2){
 		return p1.x * p2.x + p1.y * p2.y;
 	}
@@ -49,6 +49,11 @@ public final class Geo {
 	
 	public static double lgt(Point p){
 		return Math.sqrt(dp(p, p));
+	}
+	
+	public static double lgt(Point a, Point b){
+		Point diff = Geo.sub(a, b);
+		return Math.sqrt(Geo.dp(diff, diff));
 	}
 	
 	public static double dist(Point a, Point b){
@@ -94,5 +99,10 @@ public final class Geo {
 		}
 		
 		return r;
+	}
+	
+	public static Point rzut(Point p, Line line){
+		double a = dp(Geo.sub(p, line.o), line.dir) / dp(line.dir, line.dir);
+		return Geo.add(Geo.mlt(line.dir, a), line.o);
 	}
 }

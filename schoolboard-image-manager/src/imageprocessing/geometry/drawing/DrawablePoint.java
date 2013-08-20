@@ -17,9 +17,8 @@ public class DrawablePoint extends Drawable {
 	
 	@Override
 	protected void drawObject(Graphics g) {
-		g.setColor(Color.RED);
 		g.drawRect(awtPoint.x - 1, awtPoint.y - 1, 2, 2);
 		
 	}
-
+	
 }
