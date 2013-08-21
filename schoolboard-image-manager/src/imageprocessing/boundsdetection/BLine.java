@@ -13,22 +13,23 @@ import java.util.List;
 
 public class BLine {
 
-	protected MatrixB imgEdge;
 	protected Segment leadingSegment;
 	protected Line leadingLine;
 	protected List<Segment> edgeSegments;
 	protected int thickness;
-	protected double minSegLength = 5;
+	protected double minEdgeLength;
 
 	protected Point start, end;
 	protected boolean val = false, inSegment = false;
 	int r = 0;
 
-	public BLine(MatrixB imgEdge, Segment leadingSegment, int thickness) {
-		this.imgEdge = imgEdge;
-		double dx = Math.abs(leadingSegment.p1.x - leadingSegment.p2.x);
+	public BLine(MatrixB imgEdge, Segment leadingSegment, int thickness, double minEdgeLength) {
+				double dx = Math.abs(leadingSegment.p1.x - leadingSegment.p2.x);
 		double dy = Math.abs(leadingSegment.p1.y - leadingSegment.p2.y);
-
+		
+		this.minEdgeLength = minEdgeLength;
+		this.thickness = thickness;
+		
 		if ((dx > dy && leadingSegment.p1.x > leadingSegment.p2.x) || (dy >= dx && leadingSegment.p1.y > leadingSegment.p2.y)) {
 			Point tmp = leadingSegment.p1;
 			leadingSegment.p1 = leadingSegment.p2;
@@ -38,16 +39,15 @@ public class BLine {
 		this.leadingSegment = leadingSegment;
 		leadingLine = new Line(new Point(leadingSegment.p1), new Point(leadingSegment.p2));
 
-		this.thickness = thickness;
 		r = thickness / 2;
 
 		java.awt.Point p1 = Drawable.getAwtPoint(leadingSegment.p1);
 		java.awt.Point p2 = Drawable.getAwtPoint(leadingSegment.p2);
 
-		findEdgeSegments(p1.x, p1.y, p2.x, p2.y);
+		findEdgeSegments(imgEdge, p1.x, p1.y, p2.x, p2.y);
 	}
 
-	private void findEdgeSegments(int x1, int y1, int x2, int y2) {
+	private void findEdgeSegments(MatrixB imgEdge, int x1, int y1, int x2, int y2) {
 		edgeSegments = new ArrayList<Segment>();
 		val = false;
 		inSegment = false;
@@ -93,7 +93,7 @@ public class BLine {
 					d += bi;
 					x += xi;
 				}
-				val = getValue(x, y, 'x');
+				val = getValue(imgEdge, x, y, 'x');
 				checkSegment(x, y);
 			}
 		}
@@ -115,7 +115,7 @@ public class BLine {
 					d += bi;
 					y += yi;
 				}
-				val = getValue(x, y, 'y');
+				val = getValue(imgEdge, x, y, 'y');
 
 				checkSegment(x, y);
 			}
@@ -156,7 +156,7 @@ public class BLine {
 		return new BSegment(p1, p2, sgmt);
 	}
 
-	private boolean getValue(int x, int y, char leading) {
+	private boolean getValue(MatrixB imgEdge, int x, int y, char leading) {
 		if (leading == 'x') {
 
 			for (int j = y - r; j <= y + r; j++) {
@@ -184,7 +184,7 @@ public class BLine {
 		} else if (!val && inSegment) {
 			end = Geo.rzut(new Point(x, y), leadingLine);
 			double length = Geo.lgt(start, end);
-			if (length >= minSegLength) {
+			if (length >= minEdgeLength) {
 				Segment segment = new Segment(start, end);
 				edgeSegments.add(segment);
 			}
@@ -205,5 +205,10 @@ public class BLine {
 
 	public Segment getLeadingSegment() {
 		return leadingSegment;
+	}
+	
+	@Override
+	public String toString() {
+		return "bl a: "+leadingSegment.p1 +" b: "+leadingSegment.p2;
 	}
 }

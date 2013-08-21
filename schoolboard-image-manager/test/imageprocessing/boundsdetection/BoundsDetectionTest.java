@@ -8,7 +8,7 @@ import imageprocessing.geometry.drawing.DrawableBSegment;
 import imageprocessing.geometry.drawing.DrawablePerimeter;
 import imageprocessing.geometry.houghtransform.HoughLine;
 import imageprocessing.geometry.houghtransform.HoughMatrix;
-import imageprocessing.geometry.houghtransform.HoughTransform;
+import imageprocessing.geometry.houghtransform.HoughTransformParams;
 import imageprocessing.matrix.MatrixB;
 
 import java.awt.Color;
@@ -33,56 +33,61 @@ public class BoundsDetectionTest {
 		
 		MatrixB edges = Util.grayToMatrixB(bi, 0);
 		
-		// hpugh transform
-		HoughTransform ht = new HoughTransform(edges);
+//		// hpugh transform
+
+		QuadrangleParams qp = new QuadrangleParams();
+		HoughTransformParams htp = new HoughTransformParams();
 		
-		List<HoughLine> vlines = ht.getVerticalHoughLines(6);
-		List<HoughLine> hlines = ht.getHorizontalHoughLines(6);
+		HoughMatrix hm = new HoughMatrix(edges);
+		List<HoughLine> hlines = hm.getHorizontalLines(6, htp.minVotes, htp.thetaHorizontal, htp.rhoNhood, htp.thetaNhood);
+		List<HoughLine> vlines = hm.getVerticalLines(6, htp.minVotes, htp.thetaVertical, htp.rhoNhood, htp.thetaNhood);
+		
 		List<DrawableBLine> vblines = new ArrayList<DrawableBLine>(vlines.size());
 		List<DrawableBLine> hblines = new ArrayList<DrawableBLine>(hlines.size());
-		
+	
 		for (Iterator it = vlines.iterator(); it.hasNext();) {
 			HoughLine hl = (HoughLine) it.next();
 			Segment ls = hl.getSegment(edges.getSizeX(), edges.getSizeY());
-			BLine bl = new BLine(edges, ls, 5);
-			DrawableBLine dbl = new DrawableBLine(bl);
-			vblines.add(dbl);
+			BLine bl = new BLine(edges, ls, qp.lineThickness, qp.minEdgeLength);
+//			System.out.println(bl);
+			vblines.add(new DrawableBLine(bl));
 		}
-		
+//			System.out.println();
 		for (Iterator it = hlines.iterator(); it.hasNext();) {
 			HoughLine hl = (HoughLine) it.next();
 			Segment ls = hl.getSegment(edges.getSizeX(), edges.getSizeY());
-			BLine bl = new BLine(edges, ls, 5);
-			DrawableBLine dbl = new DrawableBLine(bl);
-			hblines.add(dbl);
+			BLine bl = new BLine(edges, ls, qp.lineThickness, qp.minEdgeLength);
+//			System.out.println(bl);
+			hblines.add(new DrawableBLine(bl));
 		}
+//		System.out.println();
 		
-		int n = 0;
-		for(int vi1 = 0; vi1 < vlines.size(); vi1++){
-			for(int vi2 = vi1+1; vi2 < vlines.size(); vi2++){
-				for(int hi1 = 0; hi1 < vlines.size(); hi1++){
-					for(int hi2 = hi1+1; hi2 < vlines.size(); hi2++){
-						if(n % 10 == 1)
-							try {
-								System.in.read();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						
-						BLine vl1 = vblines.get(vi1).bline, vl2 = vblines.get(vi2).bline;
-						BLine hl1  = hblines.get(hi1).bline, hl2 = hblines.get(hi2).bline;
-						System.out.println("v1: "+ vi1+" vi2: "+vi2+" hi1: "+hi1+" hi2: "+hi2);
-						showBounds(vl1, vl2, hl1, hl2, bi);
-						++n;
-					}
-				}
-			}
-		}
+		BDTestComp comp = new BDTestComp(bi);
+		System.out.println("h0 "+hblines.get(0).bline+" h1 "+hblines.get(1).bline);
+		comp.addDrawable(hblines.get(0));
+		comp.addDrawable(hblines.get(1));
+//		comp.addDrawable(hblines.get(2));
+//		comp.addDrawable(hblines.get(3));
+//		comp.addDrawable(hblines.get(4));
+//		comp.addDrawable(hblines.get(5));		
+		
+		System.out.println("v1 "+vblines.get(1).bline+" v2 "+vblines.get(2).bline);
+//		comp.addDrawable(vblines.get(0));
+		comp.addDrawable(vblines.get(1));
+		comp.addDrawable(vblines.get(2));
+//		comp.addDrawable(vblines.get(3));
+//		comp.addDrawable(vblines.get(4));
+//		comp.addDrawable(vblines.get(5));	
+//		
+		System.out.println();
+		Test.showComponent(comp, "lulz");
 
 //		showBounds(vblines.get(0).bline, vblines.get(1).bline, hblines.get(1).bline, hblines.get(2).bline, bi);
 
-		
+		// hough transform params
+		BoundaryDetector bd = new BoundaryDetector();
+		bd.setImageEdge(edges);
+		bd.detectBestPerimeter(6, 6, bi);
 	}
 	
 	public static void showBounds(BLine vl1, BLine vl2, BLine hl1, BLine hl2, BufferedImage bgImage){

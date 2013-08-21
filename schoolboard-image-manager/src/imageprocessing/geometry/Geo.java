@@ -97,7 +97,6 @@ public final class Geo {
 				points.add(new Point(p));
 			}
 		}
-		
 		return r;
 	}
 	

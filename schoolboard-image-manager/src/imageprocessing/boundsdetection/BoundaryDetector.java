@@ -1,68 +1,149 @@
 package imageprocessing.boundsdetection;
 
+import imageprocessing.boundsdetection.BoardQuadrangle.SegmentsCrossingException;
+import imageprocessing.geometry.Segment;
+import imageprocessing.geometry.drawing.DrawablePerimeter;
+import imageprocessing.geometry.houghtransform.HoughLine;
+import imageprocessing.geometry.houghtransform.HoughMatrix;
+import imageprocessing.geometry.houghtransform.HoughTransformParams;
 import imageprocessing.matrix.MatrixB;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import test.Test;
+import testJcomps.BDTestComp;
+
 public class BoundaryDetector {
-	
+
 	private double imageWidth, imageHeight;
-	private double upperEdgeLmit = 0.3, lowerEdgeLimit = 0.3, leftEdgeLimit = 0.3, rightEdgeLmit = 0.3;
-	private double minQuadrangleArea = 0.5;
 	
-	private int nlinesVertical = 6, nlinesHorizontal = 6;
-	private int theta_vertical = 30;
-	private int theta_horizontal = 30;
-	private int rho_nhood = 5;
-	private int theta_nhood = 30;
-	
+	public QuadrangleParams qp = new QuadrangleParams();
+	public HoughTransformParams htp = new HoughTransformParams();
+
 	private MatrixB imageEdge;
-	private BoardQuadrangle quadrangle;
-	
-	public BoundaryDetector(MatrixB imageEdge) {
+
+	public HoughTransformParams getHoughTransformParams() {
+		return htp;
+	}
+
+	public void setHoughTransformParams(HoughTransformParams houghTransformParams) {
+		this.htp = houghTransformParams;
+	}
+
+	public MatrixB getImageEdge() {
+		return imageEdge;
+	}
+
+	public void setImageEdge(MatrixB imageEdge) {
 		this.imageEdge = imageEdge;
 		imageWidth = imageEdge.getSizeX();
 		imageHeight = imageEdge.getSizeY();
+	}
+
+	public BoardPerimeter detectBestPerimeter(int nVerticalLines, int nHorizontalLines, BufferedImage bi) {
+		if (imageEdge == null)
+			return null;
+
+		HoughMatrix hm = new HoughMatrix(imageEdge);
+		List<HoughLine> hlines = hm.getHorizontalLines(nHorizontalLines, htp.minVotes, htp.thetaHorizontal, htp.rhoNhood, htp.thetaNhood);
+		List<HoughLine> vlines = hm.getVerticalLines(nVerticalLines, htp.minVotes, htp.thetaVertical, htp.rhoNhood, htp.thetaNhood);
 		
-	}
+		List<BLine> vblines = new ArrayList<BLine>(vlines.size());
+		List<BLine> hblines = new ArrayList<BLine>(hlines.size());
+		
+		for (Iterator it = vlines.iterator(); it.hasNext();) {
+			HoughLine hl = (HoughLine) it.next();
+			Segment ls = hl.getSegment(imageEdge.getSizeX(), imageEdge.getSizeY());
+			BLine bl = new BLine(imageEdge, ls, qp.lineThickness, qp.minEdgeLength);
+			vblines.add(bl);
+		}
+		
+		for (Iterator it = hlines.iterator(); it.hasNext();) {
+			HoughLine hl = (HoughLine) it.next();
+			Segment ls = hl.getSegment(imageEdge.getSizeX(), imageEdge.getSizeY());
+			BLine bl = new BLine(imageEdge, ls, qp.lineThickness, qp.minEdgeLength);
+			hblines.add(bl);
+		}
 
-	public double getLowerEdgeLimit() {
-		return lowerEdgeLimit;
-	}
+		int n = 0;
+		BoardQuadrangle bestQuadrangle = null;
+		
+		for(int vi1 = 0; vi1 < vlines.size(); vi1++){
+			for(int vi2 = vi1+1; vi2 < vlines.size(); vi2++){
+				for(int hi1 = 0; hi1 < vlines.size(); hi1++){
+					for(int hi2 = hi1+1; hi2 < vlines.size(); hi2++){
+						try{
+							BLine vl1 = vblines.get(vi1), vl2 = vblines.get(vi2);
+							BLine hl1  = hblines.get(hi1), hl2 = hblines.get(hi2);
+							System.out.println(""+hi1+hi2+vi1+vi2);
+							BoardQuadrangle bq = new BoardQuadrangle(vl1, vl2, hl1, hl2);
+							if(verifyQuadrangle(bq)){
+								
+								if(bestQuadrangle == null || bestQuadrangle.getCoverage() < bq.getCoverage()){
+									bestQuadrangle = bq;
+								} 
+							} else {
+							}
+						}catch(SegmentsCrossingException ex){
+							
+						}
 
-	public void setLowerEdgeLimit(double lowerEdgeLimit) {
-		this.lowerEdgeLimit = lowerEdgeLimit;
-	}
-
-	public double getLeftEdgeLimit() {
-		return leftEdgeLimit;
-	}
-
-	public void setLeftEdgeLimit(double leftEdgeLimit) {
-		this.leftEdgeLimit = leftEdgeLimit;
-	}
-
-	public double getMinQuadrangleArea() {
-		return minQuadrangleArea;
-	}
-
-	public void setMinQuadrangleArea(double minQuadrangleArea) {
-		this.minQuadrangleArea = minQuadrangleArea;
-	}
-
-	public double getUpperEdgeLmit() {
-		return upperEdgeLmit;
-	}
-
-	public void setUpperEdgeLmit(double upperEdgeLmit) {
-		this.upperEdgeLmit = upperEdgeLmit;
-	}
-
-	public double getRightEdgeLmit() {
-		return rightEdgeLmit;
-	}
-
-	public void setRightEdgeLmit(double rightEdgeLmit) {
-		this.rightEdgeLmit = rightEdgeLmit;
+						++n;
+					}
+				}
+			}
+		}
+		
+		return bestQuadrangle;
 	}
 	
+	private boolean verifyQuadrangle(BoardQuadrangle quadrangle){
+		// check position
+		BSegment upper = quadrangle.getUpperHorizontalSegment();
+		BSegment lower = quadrangle.getLowerHorizontalSegment();
+		BSegment left = quadrangle.getLeftVerticalSegment();
+		BSegment right = quadrangle.getRightVerticalSegment();
+		
+		if(upper.getMaxY() > qp.upperEdgeLmit * imageHeight){
+			return false;
+		}
+		if(lower.getMinY() < imageHeight - qp.lowerEdgeLimit * imageHeight){
+			return false;
+		}
+		if(left.getMaxX() > qp.leftEdgeLimit * imageWidth){
+			return false;
+		}
+		if(right.getMinX() < imageWidth - qp.rightEdgeLmit * imageWidth){
+			return false;
+		}
+		
+		// check area
+		if(quadrangle.getArea() < qp.minQuadrangleArea * imageWidth * imageHeight){
+			return false;
+		}
+		
+		return true;
+	}
 	
+	public static void showBounds(BoardQuadrangle bq, BufferedImage bgImage, String title){
+		
+		BDTestComp comp = new BDTestComp(bgImage);
+	
+		try{
+			DrawablePerimeter dp = new DrawablePerimeter(bq);
+			dp.setVerticesColor(Color.RED);
+			dp.setEdgesColor(Color.BLUE);
+			comp.addDrawable(dp);
+			
+			Test.showComponent(comp, title);
+			
+		}catch(Exception ex){
+			System.out.println(ex);
+		}
+
+	}
 }

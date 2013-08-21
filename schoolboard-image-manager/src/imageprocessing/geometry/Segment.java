@@ -21,4 +21,8 @@ public class Segment {
 	public Line getLine(){
 		return new Line(new Point(p1), new Point(p2));
 	}
+	
+	public double getLength(){
+		return Geo.lgt(p1, p2);
+	}
 }
