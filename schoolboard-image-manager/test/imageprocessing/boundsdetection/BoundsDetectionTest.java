@@ -49,45 +49,32 @@ public class BoundsDetectionTest {
 			HoughLine hl = (HoughLine) it.next();
 			Segment ls = hl.getSegment(edges.getSizeX(), edges.getSizeY());
 			BLine bl = new BLine(edges, ls, qp.lineThickness, qp.minEdgeLength);
-//			System.out.println(bl);
 			vblines.add(new DrawableBLine(bl));
 		}
-//			System.out.println();
+
 		for (Iterator it = hlines.iterator(); it.hasNext();) {
 			HoughLine hl = (HoughLine) it.next();
 			Segment ls = hl.getSegment(edges.getSizeX(), edges.getSizeY());
 			BLine bl = new BLine(edges, ls, qp.lineThickness, qp.minEdgeLength);
-//			System.out.println(bl);
 			hblines.add(new DrawableBLine(bl));
 		}
-//		System.out.println();
-		
-		BDTestComp comp = new BDTestComp(bi);
-		System.out.println("h0 "+hblines.get(0).bline+" h1 "+hblines.get(1).bline);
-		comp.addDrawable(hblines.get(0));
-		comp.addDrawable(hblines.get(1));
-//		comp.addDrawable(hblines.get(2));
-//		comp.addDrawable(hblines.get(3));
-//		comp.addDrawable(hblines.get(4));
-//		comp.addDrawable(hblines.get(5));		
-		
-		System.out.println("v1 "+vblines.get(1).bline+" v2 "+vblines.get(2).bline);
-//		comp.addDrawable(vblines.get(0));
-		comp.addDrawable(vblines.get(1));
-		comp.addDrawable(vblines.get(2));
-//		comp.addDrawable(vblines.get(3));
-//		comp.addDrawable(vblines.get(4));
-//		comp.addDrawable(vblines.get(5));	
-//		
-		System.out.println();
-		Test.showComponent(comp, "lulz");
 
-//		showBounds(vblines.get(0).bline, vblines.get(1).bline, hblines.get(1).bline, hblines.get(2).bline, bi);
-
-		// hough transform params
 		BoundaryDetector bd = new BoundaryDetector();
 		bd.setImageEdge(edges);
-		bd.detectBestPerimeter(6, 6, bi);
+		BoardQuadrangle bq = (BoardQuadrangle) bd.detectBestQuadrangle(6, 6, bi);
+		
+		showQuadrangle(bq, bi);
+	}
+	
+	public static void showQuadrangle(BoardQuadrangle bq, BufferedImage bgImage){
+		BDTestComp comp = new BDTestComp(bgImage);
+		DrawablePerimeter dp = new DrawablePerimeter(bq);
+		dp.setVerticesColor(Color.RED);
+		dp.setEdgesColor(Color.BLUE);
+		comp.addDrawable(dp);
+		
+		Test.showComponent(comp, "best quadrangle");
+
 	}
 	
 	public static void showBounds(BLine vl1, BLine vl2, BLine hl1, BLine hl2, BufferedImage bgImage){

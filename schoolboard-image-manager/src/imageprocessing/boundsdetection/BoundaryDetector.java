@@ -44,7 +44,7 @@ public class BoundaryDetector {
 		imageHeight = imageEdge.getSizeY();
 	}
 
-	public BoardPerimeter detectBestPerimeter(int nVerticalLines, int nHorizontalLines, BufferedImage bi) {
+	public BoardPerimeter detectBestQuadrangle(int nVerticalLines, int nHorizontalLines, BufferedImage bi) {
 		if (imageEdge == null)
 			return null;
 
@@ -79,7 +79,6 @@ public class BoundaryDetector {
 						try{
 							BLine vl1 = vblines.get(vi1), vl2 = vblines.get(vi2);
 							BLine hl1  = hblines.get(hi1), hl2 = hblines.get(hi2);
-							System.out.println(""+hi1+hi2+vi1+vi2);
 							BoardQuadrangle bq = new BoardQuadrangle(vl1, vl2, hl1, hl2);
 							if(verifyQuadrangle(bq)){
 								
