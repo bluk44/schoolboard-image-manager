@@ -1,12 +1,14 @@
 package imageprocessing.segmentation;
 
+import org.jpedal.io.ColorSpaceConvertor;
+
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import imageprocessing.ColorSpaceConverter;
+import imageprocessing.CSConverter;
+import imageprocessing.CSConverter.Conversion;
+import imageprocessing.CSConverter.UnsupportedConversionException;
 import imageprocessing.Filters;
 import imageprocessing.Util;
-import test.Test;
-import testJcomps.RowProfileComp;
 
 public abstract class BackgroundCleaner {
 	
@@ -18,27 +20,34 @@ public abstract class BackgroundCleaner {
 	}
 	
 	private void correctIllumination(ImagePlus image){
-		RowProfileComp inComp = new RowProfileComp(image.getBufferedImage(), "input", 0);
-		Test.showComponent(inComp, "input", 0, 0, inComp.getWidth(), inComp.getHeight());
+//		RowProfileComp inComp = new RowProfileComp(image.getBufferedImage(), "input", 0);
+//		Test.showComponent(inComp, "input", 0, 0, inComp.getWidth(), inComp.getHeight());
 		
-		ColorSpaceConverter.toHSBStack(image);
-		
-		ImageProcessor brightness = image.getStack().getProcessor(3);
-		ImageProcessor blurred = Util.copy(image.getStack().getProcessor(3));
+		try {
+			CSConverter.run(Conversion.STACK_HSB, image);
+			
+			ImageProcessor brightness = image.getStack().getProcessor(3);
+			ImageProcessor blurred = Util.copy(image.getStack().getProcessor(3));
+			
+			Filters.gauss(blurred, gaussianBlurRadius);
+			subBChan(brightness, blurred);
+			
+			CSConverter.run(Conversion.COLOR_RGB, image);
+		} catch (UnsupportedConversionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 
-		Filters.gauss(blurred, gaussianBlurRadius);
-		subBChan(brightness, blurred);
 		
-		ColorSpaceConverter.toRGB(image);
-		RowProfileComp resComp = new RowProfileComp(image.getBufferedImage(), "result", 1);
-		Test.showComponent(resComp, "output", 0, 0, inComp.getWidth(), inComp.getHeight());
+//		RowProfileComp resComp = new RowProfileComp(image.getBufferedImage(), "result", 1);
+//		Test.showComponent(resComp, "output", 0, 0, inComp.getWidth(), inComp.getHeight());
 		
-		inComp.selectRow(100);
-		resComp.selectRow(100);
+//		inComp.selectRow(100);
+//		resComp.selectRow(100);
  	}
 	
-	public abstract void clearBackground(ImagePlus image);
+	public abstract void clearBackground(ImagePlus rgbImage);
 
 	public double getGaussianBlurRadius() {
 		return gaussianBlurRadius;
