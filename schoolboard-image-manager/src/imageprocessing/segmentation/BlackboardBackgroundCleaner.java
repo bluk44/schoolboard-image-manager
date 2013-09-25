@@ -1,13 +1,21 @@
 package imageprocessing.segmentation;
 
-import java.awt.image.BufferedImage;
+import ij.ImagePlus;
+import imageprocessing.CSConverter;
+import imageprocessing.CSConverter.Conversion;
+import imageprocessing.CSConverter.UnsupportedConversionException;
+import imageprocessing.Thresholding;
 
 public class BlackboardBackgroundCleaner extends BackgroundCleaner {
 
 	@Override
-	public BufferedImage clearBackground(BufferedImage image) {
-		// TODO Auto-generated method stub
-		return null;
+	public void clearBackground(ImagePlus image) {
+		
+		try {
+			CSConverter.run(Conversion.GRAY_8, image);
+			Thresholding.maxEntropy(image);
+		} catch (UnsupportedConversionException e) {
+			e.printStackTrace();
+		}
 	}
-
 }
