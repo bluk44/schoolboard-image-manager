@@ -8,11 +8,11 @@ import ij.process.StackConverter;
 
 public class CSConverter {
 
-	enum Conversion {
+	public enum Conversion {
 		GRAY_8, GRAY_16, GRAY_32, COLOR_RGB, STACK_RGB, STACK_HSB
 	}
 	
-	static class UnsupportedConversionException extends Exception{
+	public static class UnsupportedConversionException extends Exception{
 		
 	}
 	
