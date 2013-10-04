@@ -52,9 +52,16 @@ public class BLine {
 		val = false;
 		inSegment = false;
 
+		x1 = x1 == imgEdge.getSizeX() ? x1 - 1 : x1;
+		x2 = x2 == imgEdge.getSizeX() ? x2 - 1 : x2;
+		
+		y1 = y1 == imgEdge.getSizeY() ? y1 - 1 : y1;
+		y2 = y2 == imgEdge.getSizeY() ? y2 - 1 : y2;		
+		
 		// zmienne pomocnicze
 		int d, dx, dy, ai, bi, xi, yi;
 		int x = x1, y = y1;
+		
 		// ustalenie kierunku rysowania
 		if (x1 < x2) {
 			xi = 1;
