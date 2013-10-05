@@ -1,6 +1,5 @@
 package imageprocessing.geometry.houghtransform;
 
-import imageprocessing.geometry.Line;
 import imageprocessing.geometry.Point;
 import imageprocessing.geometry.Segment;
 
@@ -11,15 +10,17 @@ public class HoughLine {
 
 	private double rho, theta; // theta 0 - 179
 	private int val;
-	private int rhoBase;
+	private int rho0Index;
 	private int x, y;
+	private double eps = 0.000001;
 	
 	public HoughLine(double theta, double rho, int val, int houghHeight) {
 		this.rho = rho;
+		if(this.rho == 0.0) this.rho = eps;
 		this.theta = theta;
 		this.val = val;
-		rhoBase =(int)((houghHeight - 1) / 2.d);
-		y = (int) Math.round(rhoBase + rho);
+		rho0Index =(int)((houghHeight - 1) / 2.d);
+		y = (int) Math.round(rho0Index + rho);
 		x = (int) Math.round(theta);
 	}
 	
@@ -28,8 +29,9 @@ public class HoughLine {
 		this.y = y;
 		this.val = val;
 		theta = x;
-		rhoBase = (int)((houghHeight - 1) / 2.d);
-		rho = y - rhoBase;
+		rho0Index = (int)((houghHeight - 1) / 2.d);
+		rho = y - rho0Index;
+		if(this.rho == 0.0) this.rho = eps;
 	}
 	
     public void draw(BufferedImage image, int color) { 
@@ -42,7 +44,7 @@ public class HoughLine {
 
 	public void setRho(double rho) {
 		this.rho = rho;
-		y = (int) Math.round(rhoBase + rho);
+		y = (int) Math.round(rho0Index + rho);
 	}
 
 	public double getTheta() {
@@ -76,10 +78,11 @@ public class HoughLine {
 	
 	public void setY(int y){
 		this.y = y;
-		rho = rhoBase + y;
+		rho = rho0Index + y;
 	}
 
 	public Segment getSegment(double width, double height){
+
 		Point[] points = new Point[2];
 		double sint = Math.sin(theta * Math.PI / 180), cost = Math
 				.cos(theta * Math.PI / 180);
