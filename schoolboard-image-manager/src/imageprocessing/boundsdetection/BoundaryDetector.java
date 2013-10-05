@@ -2,6 +2,7 @@ package imageprocessing.boundsdetection;
 
 import imageprocessing.boundsdetection.BoardQuadrangle.SegmentsCrossingException;
 import imageprocessing.geometry.Segment;
+import imageprocessing.geometry.drawing.DrawableBLine;
 import imageprocessing.geometry.drawing.DrawablePerimeter;
 import imageprocessing.geometry.houghtransform.HoughLine;
 import imageprocessing.geometry.houghtransform.HoughMatrix;
@@ -44,13 +45,14 @@ public class BoundaryDetector {
 		imageHeight = imageEdge.getSizeY();
 	}
 
-	public BoardPerimeter detectBestQuadrangle(int nVerticalLines, int nHorizontalLines, BufferedImage bi) {
+	public BoardPerimeter detectBestQuadrangle(BufferedImage bi) throws QuadrangleNotFoundException {
 		if (imageEdge == null)
 			return null;
 
 		HoughMatrix hm = new HoughMatrix(imageEdge);
-		List<HoughLine> hlines = hm.getHorizontalLines(nHorizontalLines, htp.minVotes, htp.thetaHorizontal, htp.rhoNhood, htp.thetaNhood);
-		List<HoughLine> vlines = hm.getVerticalLines(nVerticalLines, htp.minVotes, htp.thetaVertical, htp.rhoNhood, htp.thetaNhood);
+		Test.showImage(hm.getBufferedImage(), "houghMatrix");
+		List<HoughLine> hlines = hm.getHorizontalLines(qp.nHorizontalLines, htp.minVotes, htp.thetaHorizontal, htp.rhoNhood, htp.thetaNhood);
+		List<HoughLine> vlines = hm.getVerticalLines(qp.nVerticalLines, htp.minVotes, htp.thetaVertical, htp.rhoNhood, htp.thetaNhood);
 		
 		List<BLine> vblines = new ArrayList<BLine>(vlines.size());
 		List<BLine> hblines = new ArrayList<BLine>(hlines.size());
@@ -71,7 +73,8 @@ public class BoundaryDetector {
 
 		int n = 0;
 		BoardQuadrangle bestQuadrangle = null;
-		
+
+
 		for(int vi1 = 0; vi1 < vlines.size(); vi1++){
 			for(int vi2 = vi1+1; vi2 < vlines.size(); vi2++){
 				for(int hi1 = 0; hi1 < vlines.size(); hi1++){
@@ -87,16 +90,25 @@ public class BoundaryDetector {
 								} 
 							} else {
 							}
+
+//							Test.showComponent(comp, "quadrangle "+n);
 						}catch(SegmentsCrossingException ex){
 							
 						}
-
-						++n;
+						
+//						++n;
+//						if(n % 10 == 0){
+//							try{
+//								System.in.read();
+//							}catch(Exception ex){
+//								
+//							}
+//						}
 					}
 				}
 			}
 		}
-		
+		if(bestQuadrangle == null) throw new QuadrangleNotFoundException();
 		return bestQuadrangle;
 	}
 	
@@ -144,5 +156,21 @@ public class BoundaryDetector {
 			System.out.println(ex);
 		}
 
+	}
+	
+	public static void showHoughLines(List<BLine> lines, BufferedImage bgImage, String title){
+		BDTestComp comp = new BDTestComp(bgImage);
+		for (Iterator it = lines.iterator(); it.hasNext();) {
+			BLine bLine = (BLine) it.next();
+			DrawableBLine dbl = new DrawableBLine(bLine);
+			comp.addDrawable(dbl);
+		}
+		
+		Test.showComponent(comp, title);
+
+	}
+	
+	public class QuadrangleNotFoundException extends Exception{
+		
 	}
 }
