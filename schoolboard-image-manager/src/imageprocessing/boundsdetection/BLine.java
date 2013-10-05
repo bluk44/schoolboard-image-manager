@@ -18,11 +18,12 @@ public class BLine {
 	protected List<Segment> edgeSegments;
 	protected int thickness;
 	protected double minEdgeLength;
-
+	
 	protected Point start, end;
 	protected boolean val = false, inSegment = false;
 	int r = 0;
-
+	int xLast, yLast;
+	
 	public BLine(MatrixB imgEdge, Segment leadingSegment, int thickness, double minEdgeLength) {
 				double dx = Math.abs(leadingSegment.p1.x - leadingSegment.p2.x);
 		double dy = Math.abs(leadingSegment.p1.y - leadingSegment.p2.y);
@@ -38,7 +39,8 @@ public class BLine {
 
 		this.leadingSegment = leadingSegment;
 		leadingLine = new Line(new Point(leadingSegment.p1), new Point(leadingSegment.p2));
-
+		xLast = imgEdge.getSizeX() - 1;
+		yLast = imgEdge.getSizeY() - 1;
 		r = thickness / 2;
 
 		java.awt.Point p1 = Drawable.getAwtPoint(leadingSegment.p1);
@@ -188,7 +190,7 @@ public class BLine {
 		if (val && !inSegment) {
 			inSegment = true;
 			start = Geo.rzut(new Point(x, y), leadingLine);
-		} else if (!val && inSegment) {
+		} else if ((!val && inSegment) || (val && inSegment && (x == xLast || y == yLast))) {
 			end = Geo.rzut(new Point(x, y), leadingLine);
 			double length = Geo.lgt(start, end);
 			if (length >= minEdgeLength) {
