@@ -1,5 +1,8 @@
 package imageprocessing.boundsdetection;
 
+import ij.ImagePlus;
+import ij.process.ImageProcessor;
+import imageprocessing.Util;
 import imageprocessing.boundsdetection.BoardQuadrangle.SegmentsCrossingException;
 import imageprocessing.geometry.Segment;
 import imageprocessing.geometry.drawing.DrawableBLine;
@@ -10,6 +13,7 @@ import imageprocessing.geometry.houghtransform.HoughTransformParams;
 import imageprocessing.matrix.MatrixB;
 
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -44,8 +48,23 @@ public class BoundaryDetector {
 		imageWidth = imageEdge.getSizeX();
 		imageHeight = imageEdge.getSizeY();
 	}
-
-	public BoardPerimeter detectBestQuadrangle(BufferedImage bi) throws QuadrangleNotFoundException {
+	
+	public void setImageEdge(ImagePlus ip){
+		ImageProcessor ipr = ip.getProcessor();
+		int w = ipr.getWidth(), h = ipr.getHeight();
+		MatrixB edges = new MatrixB(w, h);
+		for(int i = 0; i < h; i++){
+			for(int j = 0; j < w; j++){
+				if(ipr.get(j, i) != 0){
+					edges.setElement(j, i, true);
+				}
+			}
+		}
+		
+		setImageEdge(edges);
+	}
+	
+	public BoardPerimeter detectBestQuadrangle() throws QuadrangleNotFoundException {
 		if (imageEdge == null)
 			return null;
 
