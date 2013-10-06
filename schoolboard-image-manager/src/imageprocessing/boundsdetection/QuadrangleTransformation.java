@@ -24,7 +24,7 @@ public final class QuadrangleTransformation {
 		double y2 = (distorted.getLowerHorizontalSegment().p1.y + distorted.getRightVerticalSegment().p2.y) / 2.0;
 		
 		Polygon fixed = new Polygon(new Point(x1, y1), new Point(x2, y1), new Point(x2, y2), new Point(x1, y2));
-		System.out.println("fixed "+fixed);
+		//System.out.println("fixed "+fixed);
 		
 		HomographyModel2D model = new HomographyModel2D();
 		InverseTransformMapping<HomographyModel2D> mapping = new InverseTransformMapping<HomographyModel2D>(model);
