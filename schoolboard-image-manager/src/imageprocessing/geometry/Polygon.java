@@ -53,5 +53,8 @@ public class Polygon {
 		this.points = points;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return " p1 "+points.get(0)+" p2 "+points.get(1)+" p3 "+points.get(2)+" p4 "+points.get(3);
+	}
 }
