@@ -3,12 +3,10 @@ package imageprocessing.plugin.ij;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageConverter;
-import ij.process.StackConverter;
 import imageprocessing.plugin.ColorSpacePlugin;
 import imageprocessing.plugin.ImgConverter;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 
 public class ColorSpacePluginIJ extends ColorSpacePlugin {
 
@@ -25,7 +23,13 @@ public class ColorSpacePluginIJ extends ColorSpacePlugin {
 		
 		return channels;
 	}
-
+	
+	@Override
+	public BufferedImage[] getRGBchannels(BufferedImage rgbImage) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	@Override
 	public BufferedImage mergeHSBchannels(BufferedImage[] channels) {
 		ImageStack stack = new ImageStack(channels[0].getWidth(), channels[0].getHeight());
@@ -41,6 +45,8 @@ public class ColorSpacePluginIJ extends ColorSpacePlugin {
 		
 		return imp.getBufferedImage();
 	}
+
+
 	
 	
 }
