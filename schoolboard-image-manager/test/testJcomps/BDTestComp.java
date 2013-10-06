@@ -5,6 +5,7 @@ import imageprocessing.geometry.drawing.Drawable;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -41,6 +42,10 @@ public class BDTestComp extends JComponent{
 			Drawable d = (Drawable) it.next();
 			d.draw(g);
 		}
+	}
+	
+	public Image getBufferedImage(){
+	 	return this.createImage(16, 16);
 	}
 		
 }

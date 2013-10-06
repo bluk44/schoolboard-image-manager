@@ -1,10 +1,10 @@
 package imageprocessing.boundsdetection;
 
 import imageprocessing.Util;
+import imageprocessing.boundsdetection.BoundaryDetector.QuadrangleNotFoundException;
 import imageprocessing.color.ColorConversion;
 import imageprocessing.geometry.Segment;
 import imageprocessing.geometry.drawing.DrawableBLine;
-import imageprocessing.geometry.drawing.DrawableBSegment;
 import imageprocessing.geometry.drawing.DrawablePerimeter;
 import imageprocessing.geometry.houghtransform.HoughLine;
 import imageprocessing.geometry.houghtransform.HoughMatrix;
@@ -13,7 +13,7 @@ import imageprocessing.matrix.MatrixB;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,8 +28,70 @@ public class BoundsDetectionTest {
 	 */
 	public static void main(String[] args) {
 		// load image edge
-		BufferedImage bi = Util.readFromFile("images/rect_detection/canny_edges_1.0_5_10/whiteboard02.png");
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/complex_background/canny_s1l5h10_wb06.png"); 
+		// [FAIL] zle oznaczona prawa krawedz, brak wykrycia wlasciwej krawedzi przez algorytm cannyego 
+		
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/complex_background/canny_s1l5h10_wb11.png");
+		// [FAIL] zla lokalizacja, tablica w innym miejscu niz podane w parametrach 
+		
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/complex_background/canny_s1l5h10_wb22.png"); 
+		// [FAIL] zle oznaczona lewa krawedz, brak wykrycia wlasciwej krawedzi przez algorytm cannyego
+		
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/hi_skewness/canny_s1l5h10_wb07.png"); 
+		// [SUCCESS] 
+		
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/hi_skewness/canny_s1l5h10_wb10.png"); 
+		// [FAIL] zle oznaczona gorna linia, zbyt mala szerokosc linii (5)
+		// [SUCCESS] jesli grubosc linii 20
+		
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/hi_skewness/canny_s1l5h10_wb15.png"); 
+		// [FAIL] brak wykrycia wlasciwej krawedzi przez algorytm cannyego
+		
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/hi_skewness/canny_s1l5h10_wb16.png");
+		// [SUCCESS]
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/hi_skewness/canny_s1l5h10_wb19.png"); 
+		// [SUCCESS]
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/hi_skewness/canny_s1l5h10_wb20.png"); 
+		// [SUCCESS]
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/hi_skewness/canny_s1l5h10_wb21.png"); 
+		// [SUCCESS]
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/hi_skewness/canny_s1l5h10_wb23.png"); 
+		// [FAIL] brak wykrycia wlasciwej krawedzi przez algorytm cannyego
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/hi_skewness/canny_s1l5h10_wb25.png"); 
+		// [SUCCESS]
+		
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/low_skewness/canny_s1l5h10_wb01.png"); // OK [SUCCESS]
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/low_skewness/canny_s1l5h10_wb02.png"); // OK [SUCCESS]
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/low_skewness/canny_s1l5h10_wb03.png"); 
+		// [FAIL] brak wykrycia wlasciwej krawedzi przez algorytm cannyego
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/low_skewness/canny_s1l5h10_wb04.png"); // OK [SUCCESS]
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/low_skewness/canny_s1l5h10_wb05.png"); // OK [SUCCESS]
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/low_skewness/canny_s1l5h10_wb08.png"); // OK [SUCCESS]
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/low_skewness/canny_s1l5h10_wb09.png"); 
+		// za malo linii do sformowania czworokata 
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/low_skewness/canny_s1l5h10_wb12.png"); // OK [SUCCESS]
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/low_skewness/canny_s1l5h10_wb13.png"); // OK [SUCCESS]
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/low_skewness/canny_s1l5h10_wb14.png"); // OK [SUCCESS]
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/low_skewness/canny_s1l5h10_wb17.png");
+		// za malo linii do sformowania czworokata 
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/low_skewness/canny_s1l5h10_wb18.png");
+		// za malo linii do sformowania czworokata 
+		//BufferedImage bi = Util.readFromFile("images/whiteboard/low_skewness/canny_s1l5h10_wb24.png"); 
+		// [SUCCESS]
+
+
+
+		//BufferedImage bi = Util.readFromFile("images/blackboard/lulz/canny_s1l5h10_bb01.png");
+
+		String bbPath = "images/blackboard/canny_s1l5h10_bb";
+		int i = 42;
+		if(i < 10) bbPath += "0"+i+".png"; 
+		else bbPath += i+".png";
+		BufferedImage bi = Util.readFromFile(bbPath);
 		bi = ColorConversion.rgb2gray(bi);
+		// 3 11 13 19 
+		// 27 28 31
+		// zly czworokat
 		
 		MatrixB edges = Util.grayToMatrixB(bi, 0);
 		
@@ -41,6 +103,10 @@ public class BoundsDetectionTest {
 		HoughMatrix hm = new HoughMatrix(edges);
 		List<HoughLine> hlines = hm.getHorizontalLines(6, htp.minVotes, htp.thetaHorizontal, htp.rhoNhood, htp.thetaNhood);
 		List<HoughLine> vlines = hm.getVerticalLines(6, htp.minVotes, htp.thetaVertical, htp.rhoNhood, htp.thetaNhood);
+		
+//		DrawableHoughLines dhl = new DrawableHoughLines(vlines, hlines);
+//		HoughLinesComp hlc = new HoughLinesComp(hm.getBufferedImage(), dhl);
+//		Test.showComponent(hlc, "lol");
 		
 		List<DrawableBLine> vblines = new ArrayList<DrawableBLine>(vlines.size());
 		List<DrawableBLine> hblines = new ArrayList<DrawableBLine>(hlines.size());
@@ -58,12 +124,29 @@ public class BoundsDetectionTest {
 			BLine bl = new BLine(edges, ls, qp.lineThickness, qp.minEdgeLength);
 			hblines.add(new DrawableBLine(bl));
 		}
-
+		
+		BDTestComp comp = new BDTestComp(edges.getBufferedImage());
+		for (Iterator it = hblines.iterator(); it.hasNext();) {
+			DrawableBLine drawableBLine = (DrawableBLine) it.next();
+			comp.addDrawable(drawableBLine);
+		}
+		for (Iterator it = vblines.iterator(); it.hasNext();) {
+			DrawableBLine drawableBLine = (DrawableBLine) it.next();
+			comp.addDrawable(drawableBLine);
+		}
+		comp.addDrawable(hblines.get(1));
+		Test.showComponent(comp, "houghLines");
+//		Test.showImage(bi, "edges");
 		BoundaryDetector bd = new BoundaryDetector();
 		bd.setImageEdge(edges);
-		BoardQuadrangle bq = (BoardQuadrangle) bd.detectBestQuadrangle(6, 6, bi);
+		BoardQuadrangle bq;
+		try {
+			bq = (BoardQuadrangle) bd.detectBestQuadrangle();
+			showQuadrangle(bq, bi);
+		} catch (QuadrangleNotFoundException e) {
+			System.out.println("quadrangle not found");
+		}
 		
-		showQuadrangle(bq, bi);
 	}
 	
 	public static void showQuadrangle(BoardQuadrangle bq, BufferedImage bgImage){

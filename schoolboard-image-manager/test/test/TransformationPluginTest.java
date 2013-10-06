@@ -1,8 +1,8 @@
 package test;
 
-import java.io.IOException;
-
 import ij.ImageJ;
+
+import java.io.IOException;
 
 public class TransformationPluginTest {
 

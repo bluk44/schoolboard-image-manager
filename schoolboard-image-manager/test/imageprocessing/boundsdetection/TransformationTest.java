@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
-import javax.swing.ButtonGroup;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -41,7 +40,7 @@ public class TransformationTest extends javax.swing.JFrame {
 	private JRadioButton jRadioButton2;
 	private JRadioButton jRadioButton1;
 
-	private BufferedImage image = Util.readFromFile("images/rect_detection/whiteboard01.png");
+	private BufferedImage image = Util.readFromFile("images/rect_detection/bb_left.png");
 	private TransformationTestComp ttc = new TransformationTestComp(image);
 	boolean diss = false, fix = false;
 
@@ -148,7 +147,7 @@ public class TransformationTest extends javax.swing.JFrame {
 				        .addGap(0, 0, Short.MAX_VALUE)))
 				.addContainerGap(18, 18));
 			pack();
-			this.setSize(728, 637);
+			this.setSize(745, 636);
 		} catch (Exception e) {
 			// add your error handling code here
 			e.printStackTrace();

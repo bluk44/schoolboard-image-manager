@@ -21,12 +21,17 @@ public class TransformationTestComp extends JComponent{
 	
 	public TransformationTestComp(BufferedImage image){
 		this.image = image;
-		dis = new DrawablePolygon(new Polygon(new Point (102, 127), new Point(535, 110), 
-				new Point(535, 437), new Point(99, 405)));
+		dis = new DrawablePolygon(new Polygon(new Point (97, 91.4), new Point(542, 107), 
+				new Point(542, 398.2), new Point(97, 413.72)));
 		dis.setColor(Color.BLUE);
 		
-		fix = new DrawablePolygon(new Polygon(new Point (100, 125), new Point(535, 125), 
-				new Point(535, 405), new Point(100, 405)));
+		double x1 = (dis.getPoint(0).x + dis.getPoint(3).x) / 2.0;
+		double x2 = (dis.getPoint(1).x + dis.getPoint(2).x) / 2.0;
+		double y1 = (dis.getPoint(0).y + dis.getPoint(1).y) / 2.0;
+		double y2 = (dis.getPoint(2).y + dis.getPoint(3).y) / 2.0;
+		
+		fix = new DrawablePolygon(new Polygon(new Point(x1, y1), new Point(x2, y1), new Point(x2, y2), new Point(x1, y2)));
+		
 	}
 	
 	@Override

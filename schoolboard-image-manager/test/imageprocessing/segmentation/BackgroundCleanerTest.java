@@ -1,7 +1,9 @@
 package imageprocessing.segmentation;
 
+import test.Test;
 import ij.ImagePlus;
-import ij.plugin.Thresholder;
+import ij.plugin.filter.Binary;
+import ij.process.ImageProcessor;
 import imageprocessing.Util;
 import imageprocessing.plugin.ij.AWTImageWrapper;
 
@@ -25,7 +27,22 @@ public class BackgroundCleanerTest {
 		ImagePlus bb = AWTImageWrapper.toImagePlus(Util.readFromFile("images/bg_remove/czarna-szkola/bb2.png"));
 		BlackboardBackgroundCleaner bbCleaner = new BlackboardBackgroundCleaner();
 		bbCleaner.run(bb);
+//		
+//		Binary binary = new Binary();
+//		bb.show();
+//		binary.setup("close", bb);
+//		try{
+//			System.in.read();
+//		} catch(Exception ex){
+//			
+//		}
+//		ImageProcessor ip = bb.getProcessor();
+//		binary.run(ip);
+//		bb.setProcessor(ip);
+//		//Test.showImage(ip.getBufferedImage(), "after");
+//		System.out.println("done...");
+		//bb.show();
+		Util.writeToFile("out.png", "png", bb.getBufferedImage());
 		
-		bb.show();
 	}
 }
