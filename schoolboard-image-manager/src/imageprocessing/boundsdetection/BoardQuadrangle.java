@@ -2,8 +2,6 @@ package imageprocessing.boundsdetection;
 
 import imageprocessing.geometry.Geo;
 import imageprocessing.geometry.Point;
-import imageprocessing.geometry.Segment;
-import imageprocessing.matrix.MatrixB;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -101,5 +99,10 @@ public class BoardQuadrangle extends BoardPerimeter {
 		public SegmentsCrossingException(String string) {
 			super(string);		
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return " p1 "+vertices.get(0)+" p2 "+vertices.get(1)+" p3 "+vertices.get(2)+" p4 "+vertices.get(3);
 	}
 }

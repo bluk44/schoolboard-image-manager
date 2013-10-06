@@ -1,9 +1,7 @@
 package imageprocessing.boundsdetection;
 
 import imageprocessing.geometry.Point;
-import imageprocessing.matrix.MatrixB;
 
-import java.util.Iterator;
 import java.util.List;
 
 public abstract class BoardPerimeter {
@@ -17,6 +15,14 @@ public abstract class BoardPerimeter {
 		return vertices;
 	}
 	
+	public Point getPoint(int i){
+		return vertices.get(i);
+	}
+	
+	public Point getNewPoint(int i){
+		return new Point(vertices.get(i));
+	}
+	
 	public List<BSegment> getEdges(){
 		return edges;
 	}
@@ -24,4 +30,5 @@ public abstract class BoardPerimeter {
 	public double getCoverage(){
 		return coverage;
 	}
+	
 }
