@@ -13,6 +13,7 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
@@ -30,13 +31,24 @@ public abstract class Util {
 		return copy;
 	}
 	
+	public static ImageProcessor copy(ImageProcessor source){
+		
+		if(source instanceof ColorProcessor){
+			int[] pixels = Arrays.copyOf((int[]) source.getPixels(), ((int[])source.getPixels()).length);
+			return new ColorProcessor(source.getWidth(), source.getHeight(), pixels);
+			
+		} else if(source instanceof ByteProcessor){
+			byte[] pixels = Arrays.copyOf((byte[]) source.getPixels(), ((byte[])source.getPixels()).length);
+			return new ByteProcessor(source.getWidth(), source.getHeight(), pixels);
+		} else return null;
+	}
+	
 	public static BufferedImage readFromFile(String filename){
 		try {
 			BufferedImage image = ImageIO.read(new File(filename));
 			return image;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("unable to open "+filename);
 		}
 		return null;
 	}

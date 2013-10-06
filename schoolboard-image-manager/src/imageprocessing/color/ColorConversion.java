@@ -1,15 +1,9 @@
 package imageprocessing.color;
 
-import ij.process.ByteProcessor;
-import ij.process.ImageProcessor;
-
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
+import test.Test;
 
 public class ColorConversion {
 
@@ -175,33 +169,33 @@ public class ColorConversion {
 		return rgbImage;
 	}
 	
-//	public static BufferedImage subtractBackground(BufferedImage src, BufferedImage bg){
-//
-//		double[][] samplesHSV = ColorConversion.rgb2hsv(src);
-//		
-//		double[] Vchan = new double[bg.getWidth()*bg.getHeight()];
-//		bg.getRaster().getSamples(0, 0, bg.getWidth(), bg.getHeight(), 0, Vchan);
-//		
-//		double mean = 0;
-//		for (int i = 0; i < Vchan.length; i++) {
-//			mean += Vchan[i];
-//		}
-//		mean /= Vchan.length;
-//		for(int i = 0; i < samplesHSV[2].length; i++){
-//			samplesHSV[2][i] = samplesHSV[2][i] - Vchan[i] + mean;
-//		}
-//		
-//		int[] out132 = new int[src.getWidth()];
-//		for(int i = 0; i < src.getWidth(); i++){
-//			out132[i] = (int) Math.round(samplesHSV[2][132*src.getWidth()+i]);
-//		}
-//		JFrame frame2 = new JFrame("row 132 out profile");
-//		RowProfileComp rp = new RowProfileComp(out132);
-//
-//		frame2.add(rp);
-//		frame2.pack();
-//		frame2.setVisible(true);
-//		return hsv2rgb(samplesHSV, src.getWidth(), src.getHeight(), src.getType());
-//
-//	}
+	public static BufferedImage subtractBackground(BufferedImage src, BufferedImage bg){
+
+		double[][] samplesHSV = ColorConversion.rgb2hsv(src);
+		
+		double[] Vchan = new double[bg.getWidth()*bg.getHeight()];
+		bg.getRaster().getSamples(0, 0, bg.getWidth(), bg.getHeight(), 0, Vchan);
+		
+		for(int i = 0; i < 16; i++){
+			for(int j = 0; j < 16; j++){
+				System.out.print(" "+Vchan[i*src.getWidth()+j]);
+			}
+			System.out.println();
+		}
+		
+		double mean = 0;
+		for (int i = 0; i < Vchan.length; i++) {
+			mean += Vchan[i];
+		}
+		mean /= Vchan.length;
+		for(int i = 0; i < samplesHSV[2].length; i++){
+			samplesHSV[2][i] = samplesHSV[2][i] - Vchan[i] + mean;
+		}
+		
+		BufferedImage brightness = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+		brightness.getRaster().setSamples(0, 0, src.getWidth(), src.getHeight(), 0, samplesHSV[2]);
+		Test.showImage(brightness, "brightness");
+		return hsv2rgb(samplesHSV, src.getWidth(), src.getHeight(), src.getType());
+
+	}
 }
