@@ -4,7 +4,6 @@ import imageprocessing.geometry.Geo;
 import imageprocessing.geometry.Line;
 import imageprocessing.geometry.Point;
 
-import java.awt.Color;
 import java.awt.Graphics;
 
 public class DrawableLine extends Drawable {

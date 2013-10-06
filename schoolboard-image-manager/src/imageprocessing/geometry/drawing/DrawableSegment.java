@@ -1,11 +1,8 @@
 package imageprocessing.geometry.drawing;
 
 import imageprocessing.geometry.Geo;
-import imageprocessing.geometry.Line;
-import imageprocessing.geometry.Point;
 import imageprocessing.geometry.Segment;
 
-import java.awt.Color;
 import java.awt.Graphics;
 
 public class DrawableSegment extends Drawable {

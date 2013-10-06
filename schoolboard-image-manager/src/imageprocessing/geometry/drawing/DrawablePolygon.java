@@ -4,7 +4,6 @@ import imageprocessing.geometry.Geo;
 import imageprocessing.geometry.Point;
 import imageprocessing.geometry.Polygon;
 
-import java.awt.Color;
 import java.awt.Graphics;
 
 public class DrawablePolygon extends Drawable {

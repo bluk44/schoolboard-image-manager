@@ -2,7 +2,6 @@ package imageprocessing.geometry.drawing;
 
 import imageprocessing.geometry.Point;
 
-import java.awt.Color;
 import java.awt.Graphics;
 
 public class DrawablePoint extends Drawable {
