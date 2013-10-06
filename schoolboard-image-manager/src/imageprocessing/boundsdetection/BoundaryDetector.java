@@ -64,12 +64,12 @@ public class BoundaryDetector {
 		setImageEdge(edges);
 	}
 	
-	public BoardPerimeter detectBestQuadrangle() throws QuadrangleNotFoundException {
+	public BoardQuadrangle detectBestQuadrangle() throws QuadrangleNotFoundException {
 		if (imageEdge == null)
 			return null;
 
 		HoughMatrix hm = new HoughMatrix(imageEdge);
-		Test.showImage(hm.getBufferedImage(), "houghMatrix");
+		//Test.showImage(hm.getBufferedImage(), "houghMatrix");
 		List<HoughLine> hlines = hm.getHorizontalLines(qp.nHorizontalLines, htp.minVotes, htp.thetaHorizontal, htp.rhoNhood, htp.thetaNhood);
 		List<HoughLine> vlines = hm.getVerticalLines(qp.nVerticalLines, htp.minVotes, htp.thetaVertical, htp.rhoNhood, htp.thetaNhood);
 		
