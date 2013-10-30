@@ -1,11 +1,14 @@
 package imageprocessing;
 
+import fiji.threshold.Auto_Threshold;
 import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.LookUpTable;
 import ij.Prefs;
+import ij.plugin.ContrastEnhancer;
 import ij.process.AutoThresholder.Method;
+import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
 public class Thresholding {
@@ -49,5 +52,21 @@ public class Thresholding {
 			ci.resetDisplayRanges();
 			ci.updateAndDraw();
 		}
+			
 	}
+	
+	public static void IJisodata(int[] pixels){
+		int[] histogram = new int[256];
+		for(int i = 0; i < pixels.length; i++)
+			++histogram[pixels[i]];
+		int t = Auto_Threshold.IJDefault(histogram);
+		
+		for(int i = 0; i < pixels.length; i++){
+			if(pixels[i] < t) pixels[i] = 0;
+			else pixels[i] = 255;
+		}
+		
+	}
+		
+
 }
