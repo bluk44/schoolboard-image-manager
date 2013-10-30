@@ -1,7 +1,5 @@
 package imageprocessing.segmentation;
 
-import org.jpedal.io.ColorSpaceConvertor;
-
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import imageprocessing.CSConverter;
@@ -12,7 +10,7 @@ import imageprocessing.Util;
 
 public abstract class BackgroundCleaner {
 	
-	private double gaussianBlurRadius = 10;
+	private double LUM_CORRECTION_BLUR_RADIUS = 30;
 	
 	public final void run(ImagePlus image){
 		correctIllumination(image);
@@ -20,16 +18,14 @@ public abstract class BackgroundCleaner {
 	}
 	
 	private void correctIllumination(ImagePlus image){
-//		RowProfileComp inComp = new RowProfileComp(image.getBufferedImage(), "input", 0);
-//		Test.showComponent(inComp, "input", 0, 0, inComp.getWidth(), inComp.getHeight());
-		
 		try {
+			CSConverter.run(Conversion.COLOR_RGB, image);
 			CSConverter.run(Conversion.STACK_HSB, image);
 			
 			ImageProcessor brightness = image.getStack().getProcessor(3);
 			ImageProcessor blurred = Util.copy(image.getStack().getProcessor(3));
 			
-			Filters.gauss(blurred, gaussianBlurRadius);
+			Filters.gauss(blurred, LUM_CORRECTION_BLUR_RADIUS);
 			subBChan(brightness, blurred);
 			
 			CSConverter.run(Conversion.COLOR_RGB, image);
@@ -38,23 +34,16 @@ public abstract class BackgroundCleaner {
 			e.printStackTrace();
 		}
 		
-
-		
-//		RowProfileComp resComp = new RowProfileComp(image.getBufferedImage(), "result", 1);
-//		Test.showComponent(resComp, "output", 0, 0, inComp.getWidth(), inComp.getHeight());
-		
-//		inComp.selectRow(100);
-//		resComp.selectRow(100);
  	}
 	
 	public abstract void clearBackground(ImagePlus rgbImage);
 
-	public double getGaussianBlurRadius() {
-		return gaussianBlurRadius;
+	public double getLumCorrectionBlurRadius() {
+		return LUM_CORRECTION_BLUR_RADIUS;
 	}
 
-	public void setGaussianBlurRadius(double gaussianBlurRadius) {
-		this.gaussianBlurRadius = gaussianBlurRadius;
+	public void setLumCorrectionBlurRadius(double r) {
+		this.LUM_CORRECTION_BLUR_RADIUS = r;
 	}
 	
 	private void subBChan(ImageProcessor ipBR, ImageProcessor ipGA){
