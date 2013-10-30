@@ -196,6 +196,10 @@ public class ConnectedRegionsLabeling {
 		public Region getRegion(int idx){
 			return regionsList.get(idx);
 		}
+		
+		public List<Region> getAllRegions(){
+			return regionsList;
+		}
 	}
 	
 	public static class Region{
@@ -246,7 +250,6 @@ public class ConnectedRegionsLabeling {
 		public void setPixelMapping(int posRegion, int y, int x){
 			imageMapping[posRegion][0] = y;
 			imageMapping[posRegion][1] = x;
-			//System.out.println(posRegion);
 
 			if(y < minY ) minY = y;
 			if(y > maxY ) maxY = y;
@@ -259,9 +262,15 @@ public class ConnectedRegionsLabeling {
 			return imageMapping[posRegion];
 		}
 		
+		public void setImage(ImageProcessor image){
+			this.image = image;
+		}
+		
+		public Integer getId(){
+			return id;
+		}
+		
 		public void printRegion(){
-		//	System.out.println(minX+ " "+minY);
-			
 			for(int i = minY; i <= maxY; i++){
 				for(int j = minX; j <= maxX; j++){
 					System.out.print(" "+(int)(image.getPixelValue(j, i)/ 128));
@@ -274,5 +283,6 @@ public class ConnectedRegionsLabeling {
 		public String toString() {
 			return "region: "+id+" size: "+size;
 		}
+		
 	}
 }
