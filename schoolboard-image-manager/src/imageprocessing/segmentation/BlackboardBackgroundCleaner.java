@@ -28,7 +28,7 @@ public class BlackboardBackgroundCleaner extends BackgroundCleaner {
 	private static float DILATION_RADIUS = 7.0f;
 	
 	@Override
-	public void clearBackground(ImagePlus image) {
+	public void separateForeground(ImagePlus image) {
 		
 		try{
 			CSConverter.run(Conversion.GRAY_8, image);
@@ -75,6 +75,42 @@ public class BlackboardBackgroundCleaner extends BackgroundCleaner {
 //		e.printStackTrace();
 //	}
 	
+	}
+
+	@Override
+	public void assingColors(ImagePlus original, ImagePlus foreground) {
+		
+		double[] bgMean = new double[3];
+		int[] pix;
+		int width = original.getWidth(), height = original.getHeight();
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				pix = original.getPixel(j, i);
+				bgMean[0] += pix[0];
+				bgMean[1] += pix[1];
+				bgMean[2] += pix[2];
+			}
+		}
+
+		bgMean[0] /= width * height;
+		bgMean[1] /= width * height;
+		bgMean[2] /= width * height;
+
+		int[] bgColor = new int[3];
+		bgColor[0] = (int) Math.round(bgMean[0]);
+		bgColor[1] = (int) Math.round(bgMean[1]);
+		bgColor[2] = (int) Math.round(bgMean[2]);
+		
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				if(foreground.getProcessor().getPixelValue(j, i) != 255){
+					original.getProcessor().putPixel(j, i, bgColor);
+				} else {
+					original.getProcessor().putPixel(j, i, fgColor);
+				}
+			}
+		}
+		
 	}
 
 }

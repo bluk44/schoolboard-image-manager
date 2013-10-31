@@ -8,13 +8,18 @@ import imageprocessing.CSConverter.UnsupportedConversionException;
 import imageprocessing.Filters;
 import imageprocessing.Util;
 
+import java.awt.Color;
+
 public abstract class BackgroundCleaner {
 	
 	private double LUM_CORRECTION_BLUR_RADIUS = 30;
+	protected int[] fgColor = new int[3];
 	
 	public final void run(ImagePlus image){
 		correctIllumination(image);
-		clearBackground(image);
+		ImagePlus foreground = image.duplicate();
+		separateForeground(foreground);
+		assingColors(image, foreground);
 	}
 	
 	private void correctIllumination(ImagePlus image){
@@ -33,17 +38,28 @@ public abstract class BackgroundCleaner {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
  	}
 	
-	public abstract void clearBackground(ImagePlus rgbImage);
-
+	public abstract void separateForeground(ImagePlus rgbImage);
+	
+	public abstract void assingColors(ImagePlus original, ImagePlus foreground);
+	
 	public double getLumCorrectionBlurRadius() {
 		return LUM_CORRECTION_BLUR_RADIUS;
 	}
 
 	public void setLumCorrectionBlurRadius(double r) {
 		this.LUM_CORRECTION_BLUR_RADIUS = r;
+	}
+	
+	public int[] getFgColor(){
+		return fgColor;
+	}
+	
+	public void setFgColor(int[] color){
+		fgColor[0] = color[0];
+		fgColor[1] = color[1];
+		fgColor[2] = color[2];
 	}
 	
 	private void subBChan(ImageProcessor ipBR, ImageProcessor ipGA){
