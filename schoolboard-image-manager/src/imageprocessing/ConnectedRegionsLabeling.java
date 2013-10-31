@@ -270,6 +270,10 @@ public class ConnectedRegionsLabeling {
 			return id;
 		}
 		
+		public int getSize(){
+			return size;
+		}
+		
 		public void printRegion(){
 			for(int i = minY; i <= maxY; i++){
 				for(int j = minX; j <= maxX; j++){
