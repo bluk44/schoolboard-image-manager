@@ -21,10 +21,10 @@ public class ConnectedRegionsLabelingTest {
 		
 		Region reg = r.getRegion(2);
 		System.out.println(reg);
-		//reg.setPixels(128);
+		reg.setPixels(128);
 		//System.out.println(reg.minY);
 		//System.out.println(reg.minX);
-		//ipl.show();
+		ipl.show();
 		reg.printRegion();
 		
 //		System.out.println("process lasted "+ (stop - start) / 1000.d + " seconds");

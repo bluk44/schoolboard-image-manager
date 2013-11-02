@@ -23,7 +23,6 @@ public class ImageJTest {
 	 */
 	public static void main(String[] args) {
 		ImageJ ij = new ImageJ();
-		
 //		BufferedImage img = Util.readFromFile("images/bg_remove/czarna-szkola/bb2.png");
 //		ImagePlus ip = AWTImageWrapper.toImagePlus(img);
 //		ImageConverter ic = new ImageConverter(ip);

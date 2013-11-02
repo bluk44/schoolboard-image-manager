@@ -92,7 +92,7 @@ public class ColorConversion {
 		return result;
 	}
 
-	private static double[] rgb2hsv(double red, double grn, double blu) {
+	public static double[] rgb2hsv(double red, double grn, double blu) {
 		double hue, sat, val;
 		double x, f, i;
 		double result[] = new double[3];
@@ -176,13 +176,13 @@ public class ColorConversion {
 		double[] Vchan = new double[bg.getWidth()*bg.getHeight()];
 		bg.getRaster().getSamples(0, 0, bg.getWidth(), bg.getHeight(), 0, Vchan);
 		
-		for(int i = 0; i < 16; i++){
-			for(int j = 0; j < 16; j++){
-				System.out.print(" "+Vchan[i*src.getWidth()+j]);
-			}
-			System.out.println();
-		}
-		
+//		for(int i = 0; i < 16; i++){
+//			for(int j = 0; j < 16; j++){
+//				System.out.print(" "+Vchan[i*src.getWidth()+j]);
+//			}
+//			System.out.println();
+//		}
+//		
 		double mean = 0;
 		for (int i = 0; i < Vchan.length; i++) {
 			mean += Vchan[i];
@@ -194,7 +194,7 @@ public class ColorConversion {
 		
 		BufferedImage brightness = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
 		brightness.getRaster().setSamples(0, 0, src.getWidth(), src.getHeight(), 0, samplesHSV[2]);
-		Test.showImage(brightness, "brightness");
+		//Test.showImage(brightness, "brightness");
 		return hsv2rgb(samplesHSV, src.getWidth(), src.getHeight(), src.getType());
 
 	}

@@ -84,7 +84,7 @@ public class BoundsDetectionTest {
 		//BufferedImage bi = Util.readFromFile("images/blackboard/lulz/canny_s1l5h10_bb01.png");
 
 		String bbPath = "images/blackboard/canny_s1l5h10_bb";
-		int i = 42;
+		int i = 6;
 		if(i < 10) bbPath += "0"+i+".png"; 
 		else bbPath += i+".png";
 		BufferedImage bi = Util.readFromFile(bbPath);
@@ -95,7 +95,7 @@ public class BoundsDetectionTest {
 		
 		MatrixB edges = Util.grayToMatrixB(bi, 0);
 		
-//		// hpugh transform
+//		// hough transform
 
 		QuadrangleParams qp = new QuadrangleParams();
 		HoughTransformParams htp = new HoughTransformParams();

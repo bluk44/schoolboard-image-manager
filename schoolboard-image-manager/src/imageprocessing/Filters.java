@@ -7,7 +7,7 @@ public class Filters {
 
 	public static void gauss(ImageProcessor ip, double sigma){
 		GaussianBlur gb = new GaussianBlur();
-		gb.blurGaussian(ip, 10, 10, 0.2);
+		gb.blurGaussian(ip, sigma, sigma, 0.2);
 	}
 	
 }

@@ -1,5 +1,6 @@
 package imageprocessing.boundsdetection;
 
+import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import imageprocessing.Util;
 import imageprocessing.geometry.Point;
@@ -16,7 +17,7 @@ import mpicbg.models.PointMatch;
 
 public final class QuadrangleTransformation {
 	
-	public static BufferedImage transform(BufferedImage img, BoardQuadrangle distorted){
+	public static Polygon transform(ImagePlus imp, BoardQuadrangle distorted){
 				
 		double x1 = (distorted.getLeftVerticalSegment().p1.x + distorted.getLeftVerticalSegment().p2.x) / 2.0;
 		double x2 = (distorted.getRightVerticalSegment().p1.x + distorted.getRightVerticalSegment().p2.x) / 2.0;
@@ -29,8 +30,9 @@ public final class QuadrangleTransformation {
 		HomographyModel2D model = new HomographyModel2D();
 		InverseTransformMapping<HomographyModel2D> mapping = new InverseTransformMapping<HomographyModel2D>(model);
 		
-		ImageProcessor ip = Util.convertToImageProcessor(img);
+		ImageProcessor ip = imp.getProcessor();
 		ImageProcessor ip2 = ip.duplicate();
+		
 		mpicbg.models.Point[] p = new mpicbg.models.Point[4], q = new mpicbg.models.Point[4];
 		ArrayList<PointMatch> pm = new ArrayList<PointMatch>(4);
 		
@@ -42,6 +44,7 @@ public final class QuadrangleTransformation {
 			try {
 				model.fit(pm);
 				mapping.map(ip, ip2);
+				imp.setProcessor(ip2);
 			} catch (NotEnoughDataPointsException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -49,7 +52,8 @@ public final class QuadrangleTransformation {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return ip2.getBufferedImage();
+			
+			return fixed;
 	}
 	
 	public static BufferedImage transform(BufferedImage img, Polygon distorted, Polygon fixed){

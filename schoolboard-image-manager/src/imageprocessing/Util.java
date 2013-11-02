@@ -53,6 +53,16 @@ public abstract class Util {
 		return null;
 	}
 	
+	public static BufferedImage readFromFile(File f){
+		try {
+			BufferedImage image = ImageIO.read(f);
+			return image;
+		} catch (IOException e) {
+			System.out.println("unable to open "+f.getName());
+		}
+		return null;
+	}
+	
 	public static void writeToFile(String filename, String formatName, BufferedImage img){
 		try {
 			File newFile = new File(filename);

@@ -22,13 +22,13 @@ public class BackgroundExtractionTest {
 
 			String inputPath = "images/bg_remove/biala-internet/";
 			String bgPath = "images/bg_remove/biala-internet/gauss/bg/";
-			int i = 10;
+			int i = 5;
 			System.out.println("start...");
 			BufferedImage img = Util.readFromFile(inputPath+"wb0"+i+".png");
 			BufferedImage background = Util.readFromFile(bgPath+"bgwb0"+i+".png");
 			BufferedImage result = ColorConversion.subtractBackground(img, background);
 			System.out.println("done...");
-			
+		//	Test.showImage(result, "result");
 		//	Util.writeToFile("images/bg_remove/czarna-szkola/bg_removed/bb0"+i+".png", "png", result);
 
 			RowProfileComp inComp = new RowProfileComp(img, "input", 1);
