@@ -160,4 +160,8 @@ public abstract class Util {
 		 
 		return nsamp;
 	}
+	
+	public static void main(String[] args){
+		BufferedImage image = Util.readFromFile("");
+	}
 }
