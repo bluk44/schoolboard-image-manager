@@ -1,20 +1,26 @@
 package dataaccess;
 
+import imagemanager.model.ImageRecord;
+import imagemanager.model.LabelRecord;
+
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+
 
 public class IODatabase {
 	private String url;
@@ -22,7 +28,8 @@ public class IODatabase {
 	private String password;
 
 	private Connection connection;
-	private PreparedStatement insert, select;
+	private PreparedStatement insert, select, getAllImages, getAllLabels, getAllImagesLabels;
+	private CallableStatement putNewImage;
 	private ResultSet resultSet;
 	
 	public IODatabase(String url, String userName, String password) {
@@ -49,28 +56,34 @@ public class IODatabase {
 		}
 	}
 	
-	public void exportImage(BufferedImage image, String name){
+	public void exportImage(File imageFile){
 		if(connection == null ) return;
 		try{
 			if(connection.isClosed()) return;
-			if(insert == null){
-				insert = connection.prepareStatement("INSERT INTO images (image_name, picture) VALUES (?, ?)");
+			if(putNewImage == null){
+				putNewImage = connection.prepareCall("{call put_new_source_image(?, ?)}");
 			}
-
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ImageIO.write(image, "png", baos);
-			InputStream is = new ByteArrayInputStream(baos.toByteArray());
 			
-			insert.setString(1, name);
-			insert.setBlob(2, is);
-			insert.executeUpdate();
+			putNewImage.setString("name_param", imageFile.getName());
+			putNewImage.setTimestamp("creation_date_param", new Timestamp(imageFile.lastModified()));
+			putNewImage.execute();
 			
+//			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//			ImageIO.write(image, "png", baos);
+//			InputStream is = new ByteArrayInputStream(baos.toByteArray());
+//			
+//			insert.setString(1, name);
+//			insert.setBlob(2, is);
+//			insert.executeUpdate();
+//			
+//			catch (IOException e) {
+//			System.out.println("[IODatabase] Error writing image to byte array "+e.getMessage());	
+//		}
+//			
 		}catch (SQLException e) {
 			System.out.println("[IODatabase] SQL exception "+e.getMessage());	
-		}catch (IOException e) {
-			System.out.println("[IODatabase] Error writing image to byte array "+e.getMessage());	
 		}
-
+		
 	}
 	
 	public Map<String, BufferedImage> importImages(String name){
@@ -95,6 +108,56 @@ public class IODatabase {
 				}
 			}
 			return imageMap;
+
+		}catch (SQLException e) {
+			System.out.println("[IODatabase] SQL exception "+e.getMessage());	
+		}
+		return null;
+	}
+	
+	public LinkedHashMap<Integer, ImageRecord> importAllImages(){
+		if(connection == null ) return null;
+		try{
+			if(connection.isClosed()) return null;
+			if(getAllImages == null){
+				getAllImages = connection.prepareCall("{call get_images()}");
+			}
+			resultSet = getAllImages.executeQuery();
+			LinkedHashMap<Integer, ImageRecord> allImages = new LinkedHashMap<Integer, ImageRecord>();
+			while(resultSet.next()){
+				Integer id = resultSet.getInt("idimage");
+				String name = resultSet.getString("name");
+				ImageRecord imgRecord = new ImageRecord(id, name);
+				System.out.println(imgRecord);
+				
+				allImages.put(id, imgRecord);
+			}
+			return allImages;
+
+		}catch (SQLException e) {
+			System.out.println("[IODatabase] SQL exception "+e.getMessage());	
+		}
+		return null;
+	}
+	
+	public LinkedHashMap<Integer, LabelRecord> importAllLabels(){
+		if(connection == null ) return null;
+		try{
+			if(connection.isClosed()) return null;
+			if(getAllLabels == null){
+				getAllLabels = connection.prepareCall("{call get_labels()}");
+			}
+			resultSet = getAllLabels.executeQuery();
+			LinkedHashMap<Integer, LabelRecord> allLabels = new LinkedHashMap<Integer, LabelRecord>();
+			while(resultSet.next()){
+				Integer id = resultSet.getInt("idlabel");
+				String name = resultSet.getString("title");
+				LabelRecord labRecord = new LabelRecord(id, name);
+				System.out.println(labRecord);
+				
+				allLabels.put(id, labRecord);
+			}
+			return allLabels;
 
 		}catch (SQLException e) {
 			System.out.println("[IODatabase] SQL exception "+e.getMessage());	
