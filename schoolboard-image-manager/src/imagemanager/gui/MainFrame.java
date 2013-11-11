@@ -1,8 +1,14 @@
 package imagemanager.gui;
 
+import imagemanager.ImageManager;
+import imagemanager.model.ImageRecord;
+
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -42,7 +48,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private JMenu jMenu1;
 
 	ThumbnailComponent[] components;
-
+	private ImageManager imageManager = ImageManager.getInstance();
 	/**
 	 * Auto-generated main method to display this JFrame
 	 */
@@ -243,13 +249,44 @@ public class MainFrame extends javax.swing.JFrame {
 	}
 
 	private void populateThumbnails() {
-		components = new ThumbnailComponent[100];
-
-		for (int i = 0; i < components.length; i++) {
-			components[i] = new ThumbnailComponent();
+		
+		//components = new ThumbnailComponent[imageManager.getAllImages().size() -1];
+		components = new ThumbnailComponent[5];
+		//Collection<ImageRecord> thumbs = imageManager.getAllImages().values();
+		LinkedHashMap<Integer, ImageRecord> thumbs = imageManager.getAllImages();
+		components[0] = new ThumbnailComponent(thumbs.get(2).getThumbnail());
+		components[1] = new ThumbnailComponent(thumbs.get(3).getThumbnail());
+		components[2] = new ThumbnailComponent(thumbs.get(4).getThumbnail());
+		components[3] = new ThumbnailComponent(thumbs.get(5).getThumbnail());
+		components[4] = new ThumbnailComponent(thumbs.get(6).getThumbnail());
+		for(int i = 0; i < 5; i++){
 			thumbnailPanel1.add(components[i]);
-			components[i].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			components[i].setBorder(BorderFactory.createLineBorder(Color.BLACK));			
 		}
+
+//		int i = 0;
+//		for (Iterator<ImageRecord> it = thumbs.iterator(); it.hasNext();) {
+//			ImageRecord ir = (ImageRecord) it.next();
+//			if(i == 0) continue;
+//			
+//			components[i-1] = new ThumbnailComponent(ir.getThumbnail());
+//			thumbnailPanel1.add(components[i-1]);
+//			components[i-1].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+//			++i;
+//		}
+//		for(int i = 0; i < thumbs.size(); i++){
+//			ImageRecord ir = (ImageRecord) thumbs
+////			components[i] = new ThumbnailComponent(ir.getThumbnail());
+////			thumbnailPanel1.add(components[i]);
+////			components[i].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+//		}
+	
+//		components = new ThumbnailComponent[100];
+//		for (int i = 0; i < components.length; i++) {
+//			components[i] = new ThumbnailComponent();
+//			thumbnailPanel1.add(components[i]);
+//			components[i].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+//		}
 	}
 
 }

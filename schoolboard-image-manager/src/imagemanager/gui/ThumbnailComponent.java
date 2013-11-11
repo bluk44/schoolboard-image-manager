@@ -1,14 +1,14 @@
 package imagemanager.gui;
 
+import ij.process.ImageProcessor;
+import imageprocessing.Util;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.JButton;
 
 public class ThumbnailComponent extends JButton {
@@ -16,31 +16,22 @@ public class ThumbnailComponent extends JButton {
 	private Dimension imageArea;
 	private int imageAreaX, imageAreaY;
 	private final int margin = 10;
-	private Image originalImage = new BufferedImage(300, 150,
-			BufferedImage.TYPE_INT_RGB);
+
+	private ImageProcessor originalImage;
 	private Image thumbnailImage;
+	
 	private int imageX, imageY;
-
+	
 	private static int DEF_COMP_WIDTH = 100, DEF_COMP_HEIGHT = 100;
-
-	public ThumbnailComponent() {
-		// try {
-		// originalImage = ImageIO.read(new File("luj.png"));
-		// thumbnailImage = new BufferedImage(1, 1,
-		// ((BufferedImage) (originalImage)).getType());
-		// setPreferredSize(new Dimension(DEF_COMP_WIDTH, DEF_COMP_HEIGHT));
-		// createThumbnail(0.25);
-		// fitThumbArea();
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-
-		thumbnailImage = new BufferedImage(1, 1,
-				((BufferedImage) (originalImage)).getType());
-		setPreferredSize(new Dimension(DEF_COMP_WIDTH, DEF_COMP_HEIGHT));
-		createThumbnail(0.25);
-		fitThumbArea();
+	
+	public ThumbnailComponent(){
+		originalImage  = Util.convertToImageProcessor(new BufferedImage(250, 168, BufferedImage.TYPE_3BYTE_BGR));
+		rescale(0.25);
+	}
+	
+	public ThumbnailComponent(BufferedImage image) {
+		originalImage = Util.convertToImageProcessor(image);
+		rescale(0.7);
 	}
 
 	public void rescale(double factor) {
@@ -50,11 +41,9 @@ public class ThumbnailComponent extends JButton {
 	}
 
 	protected void createThumbnail(double factor) {
-		thumbnailImage = originalImage.getScaledInstance(
-				(int) (originalImage.getWidth(null) * factor), -1,
-				BufferedImage.SCALE_FAST);
+		
+		thumbnailImage = originalImage.resize((int) (originalImage.getWidth()*factor)).getBufferedImage();
 	}
-
 	protected void fitThumbArea() {
 		int a = (thumbnailImage.getHeight(null) < thumbnailImage.getWidth(null)) ? thumbnailImage
 				.getWidth(null) : thumbnailImage.getHeight(null);
@@ -64,6 +53,7 @@ public class ThumbnailComponent extends JButton {
 	}
 
 	protected void changeSize() {
+	//	System.out.println(getPreferredSize());
 		setPreferredSize(new Dimension(imageArea.width + margin,
 				imageArea.height + margin));
 	}
