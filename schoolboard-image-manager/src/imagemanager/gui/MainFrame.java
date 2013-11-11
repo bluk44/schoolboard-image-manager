@@ -48,7 +48,10 @@ public class MainFrame extends javax.swing.JFrame {
 	private JMenu jMenu1;
 
 	ThumbnailComponent[] components;
+	private static int DEF_THUMB_SIZE = 150;
+	
 	private ImageManager imageManager = ImageManager.getInstance();
+	
 	/**
 	 * Auto-generated main method to display this JFrame
 	 */
@@ -161,24 +164,24 @@ public class MainFrame extends javax.swing.JFrame {
 				firstScaleButton = new JRadioButton();
 
 				scaleButtonGroup.add(firstScaleButton);
-				firstScaleButton.setText("10 %");
+				firstScaleButton.setText("150");
 				firstScaleButton.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent evt) {
-						rescaleThumbs(0.10);
+						rescaleThumbs(150);
 					}
 				});
 				scaleButtonGroup.add(secScaleButton);
-				secScaleButton.setText("25 %");
+				secScaleButton.setText("200");
 				secScaleButton.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent evt) {
-						rescaleThumbs(0.25);
+						rescaleThumbs(200);
 					}
 				});
 				scaleButtonGroup.add(thirdScaleButton);
-				thirdScaleButton.setText("50 %");
+				thirdScaleButton.setText("250");
 				thirdScaleButton.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent evt) {
-						rescaleThumbs(0.50);
+						rescaleThumbs(250);
 					}
 				});
 
@@ -243,50 +246,26 @@ public class MainFrame extends javax.swing.JFrame {
 		}
 	}
 
-	private void rescaleThumbs(double factor) {
-		thumbnailPanel1.rescaleComponents(factor);
+	private void rescaleThumbs(int thumbSize) {
+		thumbnailPanel1.rescaleComponents(thumbSize);
 		thumbnailScrollPane.revalidate();
 	}
 
 	private void populateThumbnails() {
 		
-		//components = new ThumbnailComponent[imageManager.getAllImages().size() -1];
-		components = new ThumbnailComponent[5];
-		//Collection<ImageRecord> thumbs = imageManager.getAllImages().values();
-		LinkedHashMap<Integer, ImageRecord> thumbs = imageManager.getAllImages();
-		components[0] = new ThumbnailComponent(thumbs.get(2).getThumbnail());
-		components[1] = new ThumbnailComponent(thumbs.get(3).getThumbnail());
-		components[2] = new ThumbnailComponent(thumbs.get(4).getThumbnail());
-		components[3] = new ThumbnailComponent(thumbs.get(5).getThumbnail());
-		components[4] = new ThumbnailComponent(thumbs.get(6).getThumbnail());
-		for(int i = 0; i < 5; i++){
+		components = new ThumbnailComponent[imageManager.getAllImages().size()];
+		Collection<ImageRecord> thumbs = imageManager.getAllImages().values();
+
+		int i = 0;
+		for (Iterator<ImageRecord> it = thumbs.iterator(); it.hasNext();) {
+			ImageRecord ir = (ImageRecord) it.next();
+			
+			components[i] = new ThumbnailComponent(ir.getThumbnail(), DEF_THUMB_SIZE);
 			thumbnailPanel1.add(components[i]);
-			components[i].setBorder(BorderFactory.createLineBorder(Color.BLACK));			
+			components[i].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			++i;
 		}
 
-//		int i = 0;
-//		for (Iterator<ImageRecord> it = thumbs.iterator(); it.hasNext();) {
-//			ImageRecord ir = (ImageRecord) it.next();
-//			if(i == 0) continue;
-//			
-//			components[i-1] = new ThumbnailComponent(ir.getThumbnail());
-//			thumbnailPanel1.add(components[i-1]);
-//			components[i-1].setBorder(BorderFactory.createLineBorder(Color.BLACK));
-//			++i;
-//		}
-//		for(int i = 0; i < thumbs.size(); i++){
-//			ImageRecord ir = (ImageRecord) thumbs
-////			components[i] = new ThumbnailComponent(ir.getThumbnail());
-////			thumbnailPanel1.add(components[i]);
-////			components[i].setBorder(BorderFactory.createLineBorder(Color.BLACK));
-//		}
-	
-//		components = new ThumbnailComponent[100];
-//		for (int i = 0; i < components.length; i++) {
-//			components[i] = new ThumbnailComponent();
-//			thumbnailPanel1.add(components[i]);
-//			components[i].setBorder(BorderFactory.createLineBorder(Color.BLACK));
-//		}
 	}
 
 }
