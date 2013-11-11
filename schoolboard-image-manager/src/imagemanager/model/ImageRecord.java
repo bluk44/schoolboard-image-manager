@@ -1,17 +1,18 @@
 package imagemanager.model;
 
-import ij.ImagePlus;
+import java.awt.image.BufferedImage;
 
 public class ImageRecord {
 
 	private Integer id;
 	private String name;
-	private ImagePlus thumbnail;
+	private BufferedImage thumbnail;
 	
-	public ImageRecord(Integer id, String name) {
+	public ImageRecord(Integer id, String name, BufferedImage thumbnail ) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.thumbnail = thumbnail;
 	}
 	
 	public Integer getId() {
@@ -30,11 +31,11 @@ public class ImageRecord {
 		this.name = name;
 	}
 	
-	public ImagePlus getThumbnail() {
+	public BufferedImage getThumbnail() {
 		return thumbnail;
 	}
 	
-	public void setThumbnail(ImagePlus thumbnail) {
+	public void setThumbnail(BufferedImage thumbnail) {
 		this.thumbnail = thumbnail;
 	}
 
