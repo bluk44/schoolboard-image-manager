@@ -2,6 +2,7 @@ package dataaccess;
 
 import imagemanager.model.ImageRecord;
 import imagemanager.model.LabelRecord;
+import imageprocessing.Util;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -56,32 +57,29 @@ public class IODatabase {
 		}
 	}
 	
-	public void exportImage(File imageFile){
+	public void exportImage(BufferedImage image, String name, long timestamp, BufferedImage thumbnail){
 		if(connection == null ) return;
 		try{
 			if(connection.isClosed()) return;
 			if(putNewImage == null){
-				putNewImage = connection.prepareCall("{call put_new_source_image(?, ?)}");
+				putNewImage = connection.prepareCall("{call put_new_source_image(?, ?, ?, ?, ?, ?, ?, ?)}");
 			}
 			
-			putNewImage.setString("name_param", imageFile.getName());
-			putNewImage.setTimestamp("creation_date_param", new Timestamp(imageFile.lastModified()));
+			putNewImage.setString("_name", name);
+			putNewImage.setTimestamp("_tstmp", new Timestamp(timestamp));
+			putNewImage.setBlob("_image_pixels", Util.getBlob(image, "png"));
+			putNewImage.setInt("_image_width", image.getWidth());
+			putNewImage.setInt("_image_height", image.getHeight());
+			putNewImage.setBlob("_thumb_pixels", Util.getBlob(thumbnail, "png"));
+			putNewImage.setInt("_thumb_width", thumbnail.getWidth());
+			putNewImage.setInt("_thumb_height", thumbnail.getHeight());			
 			putNewImage.execute();
 			
-//			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//			ImageIO.write(image, "png", baos);
-//			InputStream is = new ByteArrayInputStream(baos.toByteArray());
-//			
-//			insert.setString(1, name);
-//			insert.setBlob(2, is);
-//			insert.executeUpdate();
-//			
-//			catch (IOException e) {
-//			System.out.println("[IODatabase] Error writing image to byte array "+e.getMessage());	
-//		}
-//			
+			
 		}catch (SQLException e) {
 			System.out.println("[IODatabase] SQL exception "+e.getMessage());	
+		} catch (IOException e) {
+			System.out.println("[IODatabase] IO exception "+e.getMessage());	
 		}
 		
 	}
@@ -127,15 +125,17 @@ public class IODatabase {
 			while(resultSet.next()){
 				Integer id = resultSet.getInt("idimage");
 				String name = resultSet.getString("name");
-				ImageRecord imgRecord = new ImageRecord(id, name);
-				System.out.println(imgRecord);
-				
+				Blob blob = resultSet.getBlob("thumb_pixels");
+				BufferedImage img = Util.getImage(blob);
+				ImageRecord imgRecord = new ImageRecord(id, name, img);
 				allImages.put(id, imgRecord);
 			}
 			return allImages;
 
 		}catch (SQLException e) {
 			System.out.println("[IODatabase] SQL exception "+e.getMessage());	
+		} catch (IOException e) {
+			System.out.println("[IODatabase] IO exception "+e.getMessage());	
 		}
 		return null;
 	}
@@ -152,9 +152,7 @@ public class IODatabase {
 			while(resultSet.next()){
 				Integer id = resultSet.getInt("idlabel");
 				String name = resultSet.getString("title");
-				LabelRecord labRecord = new LabelRecord(id, name);
-				System.out.println(labRecord);
-				
+				LabelRecord labRecord = new LabelRecord(id, name);				
 				allLabels.put(id, labRecord);
 			}
 			return allLabels;
