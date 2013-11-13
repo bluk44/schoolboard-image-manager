@@ -5,7 +5,6 @@ import imagemanager.model.LabelRecord;
 import imageprocessing.Util;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
@@ -16,9 +15,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
 
@@ -133,9 +136,9 @@ public class IODatabase {
 			return allImages;
 
 		}catch (SQLException e) {
-			System.out.println("[IODatabase] SQL exception "+e.getMessage());	
+			System.out.println("[IODatabase importAllImages] SQL exception "+e.getMessage());	
 		} catch (IOException e) {
-			System.out.println("[IODatabase] IO exception "+e.getMessage());	
+			System.out.println("[IODatabase importAllImages] IO exception "+e.getMessage());	
 		}
 		return null;
 	}
@@ -158,9 +161,50 @@ public class IODatabase {
 			return allLabels;
 
 		}catch (SQLException e) {
-			System.out.println("[IODatabase] SQL exception "+e.getMessage());	
+			System.out.println("[IODatabase importAllLabels] SQL exception "+e.getMessage());	
 		}
 		return null;
+	}
+	
+	public LinkedHashMap<Integer, Collection<Integer>> importLabelsImages(){
+		if(connection == null ) return null;
+		try{
+			if(connection.isClosed()) return null;
+			if(getAllImagesLabels == null){
+				getAllImagesLabels = connection.prepareCall("{call get_images_labels()}");
+			}
+			resultSet = getAllImagesLabels.executeQuery();
+//			LinkedHashMap<Integer, Integer> imagesLabels = new LinkedHashMap<Integer, Integer>();
+			LinkedHashMap<Integer, Collection<Integer>>  labelsImages = new LinkedHashMap<Integer, Collection<Integer>>();
+			while(resultSet.next()){
+				Integer id_label = resultSet.getInt("idlabel");
+				Integer id_image = resultSet.getInt("idimage");
+//				System.out.println("[IODatabase importImagesLabels] idlabel "+id_label+" idimage"+id_image);
+				if(labelsImages.containsKey(id_label)){
+					labelsImages.get(id_label).add(id_image);
+				} else {
+					Collection<Integer> images = new ArrayList<Integer>();
+					images.add(id_image);
+					labelsImages.put(id_label, images);
+				}
+			}
+			for (Iterator iterator = labelsImages.entrySet().iterator(); iterator.hasNext();) {
+				Entry<Integer, Collection<Integer>> entry = (Entry<Integer, Collection<Integer>>) iterator.next();
+				System.out.println("idlabel "+entry.getKey());
+				for (Iterator iterator2 = entry.getValue().iterator(); iterator2
+						.hasNext();) {
+					Integer idimage = (Integer) iterator2.next();
+					System.out.println(" idimage "+idimage);
+					
+				}
+			}
+			return labelsImages;
+
+		}catch (SQLException e) {
+			System.out.println("[IODatabase importImagesLabels] SQL exception "+e.getMessage());	
+		}
+		return null;
+		
 	}
 	
 	@Override

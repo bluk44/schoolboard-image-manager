@@ -1,13 +1,14 @@
 package imagemanager;
 
-import ij.process.ImageProcessor;
-import imagemanager.gui.ThumbnailComponent;
 import imagemanager.model.ImageRecord;
 import imagemanager.model.LabelRecord;
 import imageprocessing.Util;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import dataaccess.IODatabase;
@@ -17,7 +18,7 @@ public class ImageManager {
 
 	private LinkedHashMap<Integer, LabelRecord> allLabels;
 	private LinkedHashMap<Integer, ImageRecord> allImages;
-	private LinkedHashMap<Integer, Integer> imagesLabels;
+	private LinkedHashMap<Integer, Collection<Integer>> labelsImages;
 
 	private IOFileSystem ioFS;
 	public IODatabase ioDB;
@@ -37,8 +38,7 @@ public class ImageManager {
 		ioDB = new IODatabase("jdbc:mysql://" + DB_HOST_NAME + ":" + DB_PORT
 				+ "/" + DB_NAME, DB_LOGIN, DB_PASS);
 		ioDB.connect();
-		allImages = ioDB.importAllImages();
-		allLabels = ioDB.importAllLabels();
+		importRecords();
 	}
 
 	public static ImageManager getInstance() {
@@ -63,15 +63,14 @@ public class ImageManager {
 			
 			ioDB.exportImage(image, imgFiles[i].getName().split("\\.")[0], 
 					imgFiles[i].lastModified(), thumb);
-		}
-		
-		
+		}		
 	}
 
 	public void importRecords() {
 		// import miniaturek i etykiet		
 		allImages = ioDB.importAllImages();
-		
+		allLabels = ioDB.importAllLabels();
+		labelsImages = ioDB.importLabelsImages();
 	}
 
 	public LinkedHashMap<Integer, LabelRecord> getAllLabels() {
@@ -82,9 +81,11 @@ public class ImageManager {
 		return allImages;
 	}
 
-	public LinkedHashMap<Integer, Integer> getImagesLabels() {
-		return imagesLabels;
+	public LinkedHashMap<Integer, Collection<Integer>> getImagesLabels() {
+		return labelsImages;
 	}
 	
-	
+	public Collection<Integer> getImageIds(int labelId){
+		return labelsImages.get(labelId);
+	}
 }

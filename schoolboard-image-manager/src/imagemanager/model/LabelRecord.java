@@ -31,6 +31,7 @@ public class LabelRecord {
 	@Override
 	public String toString() {
 		return "LabelRecord [id=" + id + ", title=" + title + "]";
+		//return title;
 	}
 		
 }
