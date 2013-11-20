@@ -9,14 +9,28 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JFrame;
+
+import org.python.antlr.PythonParser.continue_stmt_return;
+
 public class ImageComponent extends Component {
-
 	public BufferedImage image;
-	private static Dimension MAX_SIZE = new Dimension(400, 300);
 
-	private Magnifier mag = null;
+	protected static int COMP_MAX_WIDTH = 800;
+	protected static int COMP_MAX_HEIGHT = 600;
 
-	public ImageComponent() {
+	protected Rectangle srcRect;
+	protected Rectangle dstRect; // x0 = 0, y0 = 0
+	
+	protected double magStep = 0.2;
+	protected double scale = 1.0;
+
+	protected double mapScale = 0.1;
+	private int srX = 5, srY = 5;
+
+	public ImageComponent(BufferedImage img) {
+		this.image = img;
+		setScale(1.0);
 		addMouseListener(new MouseListener() {
 
 			@Override
@@ -37,158 +51,133 @@ public class ImageComponent extends Component {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.out.println(e.getButton());
-				if (e.getButton() == MouseEvent.BUTTON1) {
-					mag.increaseMag(e.getX(), e.getY());
+				if (e.getButton() == MouseEvent.BUTTON1) {					
+					double x0 = srcRect.x * scale;
+					double y0 = srcRect.y * scale;
+					
+					double cx = x0 + e.getX();
+					double cy = y0 + e.getY();
+					
+					int absx = (int)Math.round(cx / scale);
+					int absy = (int)Math.round(cy / scale);
+					scale += magStep;
+
+					setScale(scale, absx, absy);
 				} else if (e.getButton() == MouseEvent.BUTTON3) {
-					mag.decreaseMag(e.getX(), e.getY());
+					double x0 = srcRect.x * scale;
+					double y0 = srcRect.y * scale;
+					
+					double cx = x0 + e.getX();
+					double cy = y0 + e.getY();
+					
+					int absx = (int)Math.round(cx / scale);
+					int absy = (int)Math.round(cy / scale);
+					scale -= magStep;
+
+					setScale(scale, absx, absy);
 				}
-				// mag.increaseMag(image.getWidth() / 2, image.getHeight() / 2);
-				repaint();
 			}
 		});
-
-		image = new BufferedImage(600, 300, BufferedImage.TYPE_3BYTE_BGR);
-
 	}
 
-	public void setImage(BufferedImage image) {
-		this.image = image;
-		mag = new Magnifier();
-		fitToImage();
+	/**
+	 * 
+	 * @param scale skala oryginalnego obrazka
+	 * @param absCenterX 
+	 * @param absCenterY pozycja kursora na oryginalnym obrazku
+	 */
+	public void setScale(double scale, int absCenterX, int absCenterY) {
+		this.scale = scale;
+		calculateRects(absCenterX, absCenterY);
+		fitComponentSize();
 	}
 
+	public void setScale(double scale) {
+		setScale(scale, image.getWidth() / 2, image.getHeight() / 2);
+	}
+	
+	public void setMagStep(double magStep){
+		this.magStep = magStep;
+	}
+	
 	@Override
 	public void paint(Graphics g) {
-		super.paint(g);
-		paintImage(g);
+		g.drawImage(image, dstRect.x, dstRect.y, dstRect.x + dstRect.width,
+				dstRect.y + dstRect.height, srcRect.x, srcRect.y, srcRect.x
+						+ srcRect.width, srcRect.y + srcRect.height, null);
+		paintRects(g);
+		
 	}
 
-	private void paintImage(Graphics g) {
-		g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(),
-				mag.srcRect.x, mag.srcRect.y,
-				mag.srcRect.x + mag.srcRect.width, mag.srcRect.y
-						+ mag.srcRect.height, null);
-		mag.paintFrames(g);
+	private void paintRects(Graphics g) {
+		// obwodka zdjecia w skali
+		g.setColor(Color.RED);
+		g.drawRect(srX, srY, (int) (image.getWidth() * mapScale),
+				(int) (image.getHeight() * mapScale));
+		
+		// prostokat zrodlowy w skali
+		g.setColor(Color.GREEN);
+		g.drawRect((int)(srX + srcRect.x * mapScale) ,(int)(srY + srcRect.y * mapScale),
+				(int) (srcRect.width * mapScale),
+				(int) (srcRect.height * mapScale));
+
 	}
 
-	private void fitToImage() {
+	protected void calculateRects(int absCenterX, int absCenterY) {
+		int scaledImgW = (int) Math.round(image.getWidth() * scale);
+		int scaledImgH = (int) Math.round(image.getHeight() * scale);
 
-		if (image.getWidth() > image.getHeight()) {
-			if (image.getWidth() > MAX_SIZE.width) {
-				double scale = (double) MAX_SIZE.width
-						/ (double) image.getWidth();
-				mag.setMag(scale);
-				setPreferredSize(new Dimension((int)(image.getWidth() * scale), (int)(image.getHeight() * scale)));
+		if (scaledImgW <= COMP_MAX_WIDTH && scaledImgH <= COMP_MAX_WIDTH) {
 
-			} else {
-				setPreferredSize(new Dimension(image.getWidth(),
-						image.getHeight()));
-			}
+			srcRect = new Rectangle(0, 0, image.getWidth(), image.getHeight());
+			dstRect = new Rectangle(0, 0, scaledImgW, scaledImgH);
 
 		} else {
-			if (image.getHeight() > MAX_SIZE.height) {
-				double scale = (double) MAX_SIZE.height
-						/ (double) image.getHeight();
-				mag.setMag(scale);
+			int dstRectW = (scaledImgW > COMP_MAX_WIDTH) ? COMP_MAX_WIDTH
+					: scaledImgW;
+			int dstRectH = (scaledImgH > COMP_MAX_HEIGHT) ? COMP_MAX_HEIGHT
+					: scaledImgH;
+			
+			// obliczanie wycinka zdjecia zrodlowego
+			double srcRectW = dstRectW / scale;
+			double srcRectH = dstRectH / scale;
 
-				setPreferredSize(new Dimension((int)(image.getWidth() * scale), (int)(image.getHeight() * scale)));
-			} else {
-				setPreferredSize(new Dimension(image.getWidth(),
-						image.getHeight()));
-			}
+			srcRect = calculateSrcRect(absCenterX, absCenterY, srcRectW, srcRectH);
+			dstRect = new Rectangle(0, 0, (int) (srcRect.width * scale),
+					(int) (srcRect.height * scale));
 
 		}
-		System.out.println(getPreferredSize());
+
 	}
 
-	private class Magnifier {
-		public Rectangle imgRect = new Rectangle(0, 0, image.getWidth(),
-				image.getHeight());
-		public Rectangle srcRect = new Rectangle(0, 0, image.getWidth(),
-				image.getHeight());
-		
-		
-		public double magStep = 0.2;
-		public double actMag = 1.0;
+	private Rectangle calculateSrcRect(int absCenterX, int absCenterY, double width,
+			double height) {
+		double x0 = absCenterX - width / 2, x1 = absCenterX + width / 2;
+		double y0 = absCenterY - height / 2, y1 = absCenterY + height / 2;
 
-		public int mapX0 = 5, mapY0 = 5;
-		public double mapScale = 0.15;
-
-		// public double rx = 0, ry = 0;
-
-		public void increaseMag(int mouseX, int mouseY) {
-			double realX = srcRect.x + mouseX / actMag;
-			double realY = srcRect.y + mouseY / actMag;
-			System.out.println(" realX: "+realX+" realY: "+realY);
-
-			actMag += magStep;
-			// rx = realX; ry = realY;
-
-			countRects(realX, realY);
+		if (x0 < 0) {
+			x1 -= x0;
+			x0 = 0;
+		} else if (x1 > image.getWidth()) {
+			x0 -= (x1 - image.getWidth());
+			x1 = image.getWidth();
 		}
 
-		public void decreaseMag(int mouseX, int mouseY) {
-			double realX = srcRect.x + mouseX / actMag;
-			double realY = srcRect.y + mouseY / actMag;
-			System.out.println(" realX: "+realX+" realY: "+realY);
-
-			actMag -= magStep;
-			// rx = realX; ry = realY;
-
-			countRects(realX, realY);
+		if (y0 < 0) {
+			y1 -= y0;
+			y0 = 0;
+		} else if (y1 > image.getHeight()) {
+			y0 -= (y1 - image.getHeight());
+			y1 = image.getHeight();
 		}
 
-		public void setMag(double scale) {
-			actMag = scale;
-			double x = imgRect.width / 2;
-			double y = imgRect.height / 2;
-			countRects(x, y);
-		}
+		return new Rectangle((int) Math.round(x0), (int) Math.round(y0), (int) Math.round((x1 - x0)),
+				(int) Math.round(y1 - y0));
+	}
 
-		private void countRects(double realX, double realY) {
-			double newWidth = imgRect.getWidth() / actMag, newHeight = image
-					.getHeight() / actMag;
-			double newX0 = realX - newWidth / 2, newX1 = realX + newWidth / 2;
-			double newY0 = realY - newHeight / 2, newY1 = realY + newHeight / 2;
+	private void fitComponentSize() {
 
-			if (newX0 < 0) {
-				newX1 -= newX0;
-				newX0 = 0;
-			} else if (newX1 > image.getWidth()) {
-				newX0 -= (newX1 - image.getWidth());
-				newX1 = image.getWidth();
-			}
-
-			if (newY0 < 0) {
-				newY1 -= newY0;
-				newY0 = 0;
-			} else if (newY1 > image.getHeight()) {
-				newY0 -= (newY1 - image.getHeight());
-				newY1 = image.getHeight();
-			}
-
-			srcRect = new Rectangle((int) newX0, (int) newY0,
-					(int) (newX1 - newX0), (int) (newY1 - newY0));
-		}
-
-		public void paintFrames(Graphics g) {
-			Color prv = g.getColor();
-			g.setColor(Color.BLACK);
-			g.drawRect(mapX0, mapY0, (int) (imgRect.width * mapScale),
-					(int) (imgRect.height * mapScale));
-
-			g.setColor(Color.RED);
-			g.drawRect((int) (mapX0 + srcRect.x * mapScale),
-					(int) (mapY0 + srcRect.y * mapScale),
-					(int) (srcRect.width * mapScale),
-					(int) (srcRect.height * mapScale));
-
-			// g.setColor(Color.BLUE);
-			// g.fillOval(mapX0 + (int)(rx * mapScale), mapY0 + (int)(ry *
-			// mapScale), 5, 5);
-			g.setColor(prv);
-		}
-
+		setPreferredSize(new Dimension(dstRect.width, dstRect.height));
+		repaint();
 	}
 }
