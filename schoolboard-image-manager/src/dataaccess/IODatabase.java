@@ -32,7 +32,7 @@ public class IODatabase {
 	private String password;
 
 	private Connection connection;
-	private PreparedStatement insert, select, getAllImages, getAllLabels, getAllImagesLabels;
+	private PreparedStatement insert, select, getAllImages, getAllLabels, getAllImagesLabels, getImage;
 	private CallableStatement putNewImage;
 	private ResultSet resultSet;
 	
@@ -116,7 +116,32 @@ public class IODatabase {
 		return null;
 	}
 	
-	public LinkedHashMap<Integer, ImageRecord> importAllImages(){
+	public BufferedImage importImage(int imageId){
+		if(connection == null ) return null;
+		try{
+			if(connection.isClosed()) return null;
+			if(getImage == null){
+				getImage = connection.prepareCall("{call get_image(?)}");
+			}
+			getImage.setInt(1, imageId);
+			resultSet = getImage.executeQuery();
+			BufferedImage image = null;
+			
+			while(resultSet.next()){	
+				Blob blob = resultSet.getBlob(1);
+				image = Util.getImage(blob);
+			}
+			return image;
+
+		}catch (SQLException e) {
+			System.out.println("[IODatabase importImage] SQL exception "+e.getMessage());	
+		} catch (IOException e) {
+			System.out.println("[IODatabase importImage] IO exception "+e.getMessage());	
+		}
+		return null;
+	}
+	
+	public LinkedHashMap<Integer, ImageRecord> importThumbnails(){
 		if(connection == null ) return null;
 		try{
 			if(connection.isClosed()) return null;
