@@ -23,7 +23,11 @@ public class ImageComponent extends JComponent {
 
 	protected Point o = new Point(0, 0);
 	protected double scale = 1.0;
-
+	
+	public ImageComponent(){
+		setPreferredSize(new Dimension(PREF_WIDTH, PREF_HEIGHT));
+	}
+	
 	public ImageComponent(BufferedImage image) {
 		this.image = image;
 		setPreferredSize(new Dimension(PREF_WIDTH, PREF_HEIGHT));
@@ -33,8 +37,13 @@ public class ImageComponent extends JComponent {
 	public void addShape(Shape shape){
 		shape.resize(scale);
 		shape.add(o);
-		
 		shapes.add(shape);
+	}
+	
+	public void setShape(int index, Shape shape){
+		shape.resize(scale);
+		shape.add(o);
+		shapes.set(index, shape);
 	}
 	
 	public Shape getShape(int idx){
@@ -90,6 +99,7 @@ public class ImageComponent extends JComponent {
 	@Override
 	public void setPreferredSize(Dimension preferredSize) {
 		super.setPreferredSize(preferredSize);
+		if(image == null) return;
 		calculateScale();
 		repaint();
 	}
@@ -97,15 +107,20 @@ public class ImageComponent extends JComponent {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		paintImage(g);
+		paintShapes(g);
+	}
+	
+	protected void paintImage(Graphics g){
+		if(image == null) return;
 		int w = getPreferredSize().width, h = getPreferredSize().height;
+		
 		g.drawImage(image, (int) (o.x), (int) (o.y), (int) (o.x + w),
 				(int) (o.y + h), 0, 0, (int) (w / scale), (int) (h / scale),
 				null);
-
-		for (Iterator it = shapes.iterator(); it.hasNext();) {
-			Shape s = (Shape) it.next();
-			s.draw(g);
-		}
-
+	}
+	
+	protected void paintShapes(Graphics g){
+		for (Shape shape : shapes) shape.draw(g);
 	}
 }

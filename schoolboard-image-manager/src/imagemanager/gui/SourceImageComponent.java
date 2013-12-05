@@ -15,17 +15,18 @@ import java.util.ArrayList;
 
 public class SourceImageComponent extends ImageComponent {
 
-
 	private boolean boardSelected = false;
 	private boolean selectionMode = false;
-
+	
+	private static final Color DIS_COLOR = Color.RED;
+	private static final Color FIX_COLOR = Color.GREEN;
+	
 	{
 		initShapes();
 	}
-
+	
 	public SourceImageComponent() {
 		this(Util.readFromFile("images/blackboard/bb31.png"));
-
 	}
 
 	public SourceImageComponent(BufferedImage image) {
@@ -92,35 +93,18 @@ public class SourceImageComponent extends ImageComponent {
 	private void createBoardRegion() {
 		Polygon dis = ((PointSet) shapes.get(0)).getPolygon();
 		((PointSet) shapes.get(0)).reset();
-		dis.setColor(Color.RED);
+		dis.setColor(DIS_COLOR);
 		shapes.set(1, dis);
 		createFixedBoardRegion();
 	}
 	
-	private void createFixedBoardRegion() {
-		Polygon dist = (Polygon) shapes.get(1);
-
-		double x1 = (dist.getPoint(0).x + dist.getPoint(3).x) / 2.0;
-		double x2 = (dist.getPoint(1).x + dist.getPoint(2).x) / 2.0;
-		double y1 = (dist.getPoint(0).y + dist.getPoint(1).y) / 2.0;
-		double y2 = (dist.getPoint(2).y + dist.getPoint(3).y) / 2.0;
-
-		Polygon fixed = new Polygon(new Point(x1, y1), new Point(x2, y1),
-				new Point(x2, y2), new Point(x1, y2));
-		fixed.setColor(Color.green);
-		shapes.set(2, fixed);
-		
-		boardSelected = true;
-		selectionMode = false;
-	}
-	
-
 	public void setAutodetectedBoard(Polygon boardPoly) {
 		initShapes();
-		shapes.add(boardPoly);
+		boardPoly.setColor(DIS_COLOR);
+		setShape(1, boardPoly);
 		createFixedBoardRegion();
+		repaint();
 	}
-	
 	
 	public boolean isBoardSelected() {
 		return boardSelected;
@@ -146,11 +130,27 @@ public class SourceImageComponent extends ImageComponent {
 		return null;
 	}
 
+	private void createFixedBoardRegion() {
+		Polygon dist = (Polygon) shapes.get(1);
 
+		double x1 = (dist.getPoint(0).x + dist.getPoint(3).x) / 2.0;
+		double x2 = (dist.getPoint(1).x + dist.getPoint(2).x) / 2.0;
+		double y1 = (dist.getPoint(0).y + dist.getPoint(1).y) / 2.0;
+		double y2 = (dist.getPoint(2).y + dist.getPoint(3).y) / 2.0;
+
+		Polygon fixed = new Polygon(new Point(x1, y1), new Point(x2, y1),
+				new Point(x2, y2), new Point(x1, y2));
+		fixed.setColor(FIX_COLOR);
+		shapes.set(2, fixed);
+		
+		boardSelected = true;
+		selectionMode = false;
+	}
+	
 	private void initShapes() {
 		shapes = new ArrayList<Shape>();
 		PointSet ps = new PointSet();
-		ps.setColor(Color.RED);
+		ps.setColor(DIS_COLOR);
 		shapes.add(ps);
 		shapes.add(new EmptyShape());
 		shapes.add(new EmptyShape());
