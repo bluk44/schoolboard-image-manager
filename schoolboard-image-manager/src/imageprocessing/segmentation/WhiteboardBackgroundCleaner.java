@@ -16,14 +16,29 @@ import imageprocessing.Thresholding;
 
 import java.util.Iterator;
 
+/**
+ * Oddzielanie tła dla tablicy białej
+ * 
+ * @author Lucas Budkowski
+ *
+ */
 public class WhiteboardBackgroundCleaner extends BackgroundCleaner {
+	
+	/*
+	 * parametry algorytmu cannyego 
+	 */
 	private static double SMOOTHING_SCALE = 2.0;
 	private static boolean SUPRESS = true;
 	private static double LOWER = 1.0;
 	private static double HIGHER = 2.0;
-
-	private static float DILATION_RADIUS = 3.0f;
-
+	
+	/*
+	 * promień dylacji (szerokosc pisma) / (wysokosc zdjęcia)
+	 */
+	static{
+		DILATION_RATIO = 4.d / 1000.d;
+	}
+		
 	@Override
 	public void separateForeground(ImagePlus rgbImage) {
 		// zamiana na 8 bit gray
@@ -41,8 +56,11 @@ public class WhiteboardBackgroundCleaner extends BackgroundCleaner {
 		EdgeDetection.canny(mask, SMOOTHING_SCALE, SUPRESS, LOWER, HIGHER);
 		// mask.show();
 		// System.out.println(mask.getType());
+		
+		calculateDilationRadius(rgbImage.getHeight());
+		System.out.println("dilation radius: "+dilation);
 
-		Morphology.run(mask, OpType.DILATE, StructElType.CIRCLE, DILATION_RADIUS);
+		Morphology.run(mask, OpType.DILATE, StructElType.CIRCLE, dilation);
 
 		// oznaczanie polaczonych regionow
 		Results r = ConnectedRegionsLabeling.run(mask.getProcessor(), 0);
@@ -60,9 +78,18 @@ public class WhiteboardBackgroundCleaner extends BackgroundCleaner {
 			reg.setPixels(pixels);
 		}
 	}
-
+	
+	
 	@Override
 	public void assingColors(ImagePlus original, ImagePlus foreground) {
+		
+		foreground.show();
+		
+		int[] fgColor = new int[3];
+		
+		fgColor[0] = 0;
+		fgColor[1] = 0;
+		fgColor[2] = 0;
 		// count background mean
 		double[] bgMean = new double[3];
 		int[] pix;
@@ -85,30 +112,6 @@ public class WhiteboardBackgroundCleaner extends BackgroundCleaner {
 		bgColor[1] = (int) Math.round(bgMean[1]);
 		bgColor[2] = (int) Math.round(bgMean[2]);
 
-		// for(int i = 0; i < height; i++){
-		// for(int j = 0; j < width; j++){
-		// if(foreground.getProcessor().getPixelValue(j, i) == 0){
-		// // piksel obiektu
-		// pix = original.getPixel(j, i);
-		// double[] hsv = ColorConversion.rgb2hsv(pix[0], pix[1], pix[2]);
-		// int h = (int) Math.round(hsv[0] / 30.0d);
-		// hsv[0] = h* 30;
-		// hsv[1] = 100;
-		// hsv[2] = 100;
-		// double[] rgb = ColorConversion.hsv2rgb(hsv[0], hsv[1], hsv[2]);
-		//
-		// pix[0] = (int) rgb[0];
-		// pix[1] = (int) rgb[1];
-		// pix[2] = (int) rgb[2];
-		//
-		// original.getProcessor().putPixel(j, i, pix);
-		// } else{
-		// // piksel tla
-		// original.getProcessor().putPixel(j, i, bgColor);
-		// }
-		// }
-		// }
-
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				if(foreground.getProcessor().getPixelValue(j, i) != 0){
@@ -121,17 +124,4 @@ public class WhiteboardBackgroundCleaner extends BackgroundCleaner {
 
 	}
 
-	// public void normColor(int[] pixel){
-	// int minVal = 255, minIdx = 0;
-	// int maxVal = 0, maxIdx = 0;
-	//
-	// for(int i = 0; i < pixel.length; i++){
-	// if(pixel[i] > maxVal){
-	// maxVal = pixel[i];
-	// maxIdx = i;
-	// }
-	// if(pixel[i])
-	// }
-	//
-	// }
 }

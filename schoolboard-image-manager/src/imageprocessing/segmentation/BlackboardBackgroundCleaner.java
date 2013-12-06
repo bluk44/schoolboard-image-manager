@@ -16,16 +16,28 @@ import imageprocessing.Morphology.OpType;
 import imageprocessing.Morphology.StructElType;
 import imageprocessing.Thresholding;
 
+/**
+ * Oddzielanie tła dla tablicy czarnej
+ * 
+ * @author Lucas Budkowski
+ *
+ */
 public class BlackboardBackgroundCleaner extends BackgroundCleaner {
 	
-	//private static int MIN_REG_SIZE = 50;
-	
+	/*
+	 * parametry algorytmu cannyego
+	 */
 	private static double SMOOTHING_SCALE = 2.0;
 	private static boolean SUPRESS = true;
 	private static double LOWER = 5.0;
-	private static double HIGHER = 10.0;
+	private static double HIGHER = 5.0;
 	
-	private static float DILATION_RADIUS = 7.0f;
+	/*
+	 * promień dylacji (szerokosc pisma) / (wysokosc zdjęcia)
+	 */
+	static{
+		DILATION_RATIO = 7.d / 1000.d;
+	}
 	
 	@Override
 	public void separateForeground(ImagePlus image) {
@@ -39,8 +51,10 @@ public class BlackboardBackgroundCleaner extends BackgroundCleaner {
 			EdgeDetection.canny(mask, SMOOTHING_SCALE, SUPRESS, LOWER, HIGHER);
 			//mask.show();
 			//System.out.println(mask.getType());
+			calculateDilationRadius(image.getHeight());
+			System.out.println("dilation radius: "+dilation);
 			
-			Morphology.run(mask, OpType.DILATE, StructElType.CIRCLE, DILATION_RADIUS);
+			Morphology.run(mask, OpType.DILATE, StructElType.CIRCLE, dilation);
 					
 			// oznaczanie polaczonych regionow
 			Results r = ConnectedRegionsLabeling.run(mask.getProcessor(), 0);
@@ -60,25 +74,17 @@ public class BlackboardBackgroundCleaner extends BackgroundCleaner {
 		} catch(UnsupportedConversionException e){
 			System.out.println("conversion to 8 bit gray failed");
 		}
-		
-//		try {
-//		CSConverter.run(Conversion.GRAY_8, image);
-//		Thresholding.maxEntropy(image);
-//		
-//		Results r = ConnectedRegionsLabeling.run(image.getProcessor(), 0);
-//		for (Iterator iterator = r.getAllRegions().iterator(); iterator.hasNext();) {
-//			Region reg = (Region) iterator.next();
-//			if(reg.getSize() > MIN_REG_SIZE) reg.setPixels(128);
-//			//reg.setPixels(50);
-//		}
-//	} catch (UnsupportedConversionException e) {
-//		e.printStackTrace();
-//	}
-	
+			
 	}
-
+		
 	@Override
 	public void assingColors(ImagePlus original, ImagePlus foreground) {
+
+		int[] fgColor = new int[3];
+		
+		fgColor[0] = 255;
+		fgColor[1] = 255;
+		fgColor[2] = 255;
 		
 		double[] bgMean = new double[3];
 		int[] pix;
@@ -111,6 +117,18 @@ public class BlackboardBackgroundCleaner extends BackgroundCleaner {
 			}
 		}
 		
+	}
+	
+	public void setSmooth(double smoothScale){
+		SMOOTHING_SCALE = smoothScale;
+	}
+	
+	public void setLow(double low){
+		LOWER = low;
+	}
+	
+	public void setHigh(double hi){
+		HIGHER = hi;
 	}
 
 }
