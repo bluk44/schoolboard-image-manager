@@ -1,9 +1,17 @@
 package imagemanager.model;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.List;
+import imageprocessing.geometry.Polygon;
 
 public class TextRegion {
-// TODO
+
+	private Polygon poly;
+		
+	public TextRegion(Polygon poly){
+		this.poly = poly;
+	}
+	
+	public Polygon getPolygon(){
+		return poly;
+	}
+	
 }
