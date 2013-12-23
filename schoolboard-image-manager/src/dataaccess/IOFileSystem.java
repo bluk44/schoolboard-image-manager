@@ -1,61 +1,70 @@
 package dataaccess;
 
+import imagemanager.model.ImageRecord;
+import imageprocessing.Util;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.imageio.ImageIO;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 
 public class IOFileSystem {
 	
-	private String imageDir = null;
 	
-	public IOFileSystem(String imageDir){
-		this.imageDir = imageDir;
+	private static IOFileSystem instance;
+	private static float thumbnailScale = 0.18f;
+	
+	private IOFileSystem(){}
+	
+	private final static Logger LOG = Logger.getLogger(IOFileSystem.class
+			.getName());
+	static { LOG.addAppender(new ConsoleAppender(new SimpleLayout())); }
+	
+	public static IOFileSystem getInstance(){
+		if(instance == null) instance = new IOFileSystem();
+		
+		return instance;
 	}
 	
-	public Map<String, BufferedImage> importImages(){
-		File imgDir = new File(imageDir);
-		
-		if(!imgDir.isDirectory()) return null;
-		File[] imgFiles = imgDir.listFiles();
-		Map<String, BufferedImage> imageMap = new HashMap<String, BufferedImage>();
-		for(int i = 0; i < imgFiles.length; i++){
-			if(!imgFiles[i].isFile()) continue;
-			try {
-					BufferedImage image = ImageIO.read(imgFiles[i]); 
-					imageMap.put(imgFiles[i].getName(), image); 
-				}catch (IOException e){
-				System.out.println("[Image import] unable to read from " + imgFiles[i].getName() + " "+ e.getMessage());
-			}
+	public BufferedImage readImage(File file){
+		return Util.readFromFile(file);
+	}
+	
+	
+	private ImageRecord exportToDatabase(File file) throws SQLException{
+		String type = file.getPath().split("\\.")[1];
+		boolean isValid = false;
+		for (String valid : validFormats){
+			if(valid.equals(type)){isValid = true; break;}
 		}
 		
-		return imageMap;
-	}
-	
-	public BufferedImage importImage(String fileName){
-		BufferedImage image = null;
-		String imgPath = imageDir+"/"+fileName;
-		File imgFile = new File(imgPath);
-		try { image = ImageIO.read(imgFile); } catch (IOException e) {
-			System.out.println("[Image import] unable to read from " + imgFile.getName() + " "+ e.getMessage() );			
-		}
+		if(!isValid) return null;
 		
-		return image;
+		BufferedImage image = Util.readFromFile(file);
+		IODatabase ioDB = IODatabase.getInstance();
+		ioDB.exportImage(image, file.getName(), file.lastModified(), Util.resize(image, thumbnailScale));
+		
+		return ioDB.importImageRecord(file.getName());
 	}
 	
-	public void exportImage(BufferedImage image, String fileName, String formatName){
-		String imgPath = imageDir+"/"+fileName;
-		File imgFile = new File(imgPath);
-		try {
-			imgFile.createNewFile();
-			ImageIO.write(image, formatName, imgFile);
-		} catch (IOException e) {
-			System.out.println("[Image export] unable to write file "+imgFile.getName()+" "+e.getMessage());
-			//System.out.println("[Image import] unable to write to "+ newF " "+ e.getMessage() );			
-
-		}
-	}
+// TODO
+//	public void exportImage(BufferedImage image, String fileName, String formatName){
+//		String imgPath = imageDir+"/"+fileName;
+//		File imgFile = new File(imgPath);
+//		try {
+//			imgFile.createNewFile();
+//			ImageIO.write(image, formatName, imgFile);
+//		} catch (IOException e) {
+//			System.out.println("[Image export] unable to write file "+imgFile.getName()+" "+e.getMessage());
+//			//System.out.println("[Image import] unable to write to "+ newF " "+ e.getMessage() );			
+//
+//		}
+//	}
+	
+	
 }

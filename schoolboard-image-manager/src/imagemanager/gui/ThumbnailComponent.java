@@ -6,6 +6,8 @@ import imageprocessing.Util;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JButton;
@@ -25,18 +27,29 @@ public class ThumbnailComponent extends JButton {
 	// private BufferedImage originalImage;
 	private ImageRecord imageRecord;
 	private BufferedImage thumbnailImage;
-
+	
 	private int imageX, imageY;
+	public int refCounter = 0;
+	
+	// TODO okno edycji
+	private MouseListener mouseListener = new MouseListener() {
+		public void mouseReleased(MouseEvent e) {}
+		public void mousePressed(MouseEvent e) {}
+		public void mouseExited(MouseEvent e) {}
+		public void mouseEntered(MouseEvent e) {}
 
-	// public ThumbnailComponent(int thumbSize) {
-	// originalImage = new BufferedImage(250,
-	// 168, BufferedImage.TYPE_3BYTE_BGR);
-	// setThumbImageArea(thumbSize);
-	// }
-
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			ThumbnailComponent thumbComp = (ThumbnailComponent)e.getSource();
+			System.out.println(thumbComp.getImageId()+" image clicked");
+		}
+		
+	};
+	
 	public ThumbnailComponent(ImageRecord imageRecord, int thumbSize) {
 		this.imageRecord = imageRecord;
 		setThumbImageArea(thumbSize);
+		addMouseListener(mouseListener);
 	}
 
 	public void setThumbImageArea(int imageAreaSize) {
@@ -80,4 +93,6 @@ public class ThumbnailComponent extends JButton {
 	public Integer getImageId(){
 		return imageRecord.getId();
 	}
+	
+	
 }

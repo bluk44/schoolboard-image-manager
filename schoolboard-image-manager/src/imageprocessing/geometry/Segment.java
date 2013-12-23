@@ -1,6 +1,9 @@
 package imageprocessing.geometry;
 
-public class Segment {
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+
+public class Segment extends Shape{
 
 	public Point p1, p2;
 	
@@ -25,4 +28,37 @@ public class Segment {
 	public double getLength(){
 		return Geo.lgt(p1, p2);
 	}
+
+	@Override
+	public void draw(BufferedImage canvas) {
+		Shape.drawLine(canvas, color, rad, p1, p2);
+	}
+	
+	@Override
+	public void draw(Graphics g) {
+		g.setColor(color);
+		p1.draw(g);
+		p2.draw(g);
+		g.drawLine((int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y);
+	}
+	
+	@Override
+	public void resize(double scale) {
+		p1.mlt(scale);
+		p2.mlt(scale);
+	}
+
+	@Override
+	public void add(Point p) {
+		p1.add(p);
+		p2.add(p);
+	}
+
+	@Override
+	public void sub(Point p) {
+		p1.sub(p);
+		p2.sub(p);
+	}
+
+
 }

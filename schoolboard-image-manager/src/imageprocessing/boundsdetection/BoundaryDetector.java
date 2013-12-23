@@ -2,7 +2,6 @@ package imageprocessing.boundsdetection;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import imageprocessing.Util;
 import imageprocessing.boundsdetection.BoardQuadrangle.SegmentsCrossingException;
 import imageprocessing.geometry.Segment;
 import imageprocessing.geometry.drawing.DrawableBLine;
@@ -13,7 +12,6 @@ import imageprocessing.geometry.houghtransform.HoughTransformParams;
 import imageprocessing.matrix.MatrixB;
 
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -64,12 +62,13 @@ public class BoundaryDetector {
 		setImageEdge(edges);
 	}
 	
+
 	public BoardQuadrangle detectBestQuadrangle() throws QuadrangleNotFoundException {
 		if (imageEdge == null)
 			return null;
 
 		HoughMatrix hm = new HoughMatrix(imageEdge);
-		//Test.showImage(hm.getBufferedImage(), "houghMatrix");
+//		Test.showImage(hm.getBufferedImage(), "houghMatrix");
 		List<HoughLine> hlines = hm.getHorizontalLines(qp.nHorizontalLines, htp.minVotes, htp.thetaHorizontal, htp.rhoNhood, htp.thetaNhood);
 		List<HoughLine> vlines = hm.getVerticalLines(qp.nVerticalLines, htp.minVotes, htp.thetaVertical, htp.rhoNhood, htp.thetaNhood);
 		
@@ -92,7 +91,7 @@ public class BoundaryDetector {
 
 		int n = 0;
 		BoardQuadrangle bestQuadrangle = null;
-
+//		System.out.println("searching for board quadrangle");
 
 		for(int vi1 = 0; vi1 < vlines.size(); vi1++){
 			for(int vi2 = vi1+1; vi2 < vlines.size(); vi2++){
@@ -115,7 +114,8 @@ public class BoundaryDetector {
 							
 						}
 						
-//						++n;
+						++n;
+//						System.out.println(""+n+" processed");
 //						if(n % 10 == 0){
 //							try{
 //								System.in.read();
@@ -142,6 +142,7 @@ public class BoundaryDetector {
 			return false;
 		}
 		if(lower.getMinY() < imageHeight - qp.lowerEdgeLimit * imageHeight){
+
 			return false;
 		}
 		if(left.getMaxX() > qp.leftEdgeLimit * imageWidth){

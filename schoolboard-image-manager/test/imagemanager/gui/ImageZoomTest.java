@@ -17,7 +17,7 @@ import javax.swing.JFrame;
 public class ImageZoomTest {
 	static JFrame jf;
 	public static void main(String[] args){
-		ImageComponent imc = new ImageComponent(Util.readFromFile("images/scaling_test/test1000300.png"));
+		TestImageComponent imc = new TestImageComponent(Util.readFromFile("images/blackboard/bb01.png"));
 		jf = new JFrame();
 		jf.add(imc);
 		jf.setTitle(""+imc.getPreferredSize().width + " "+imc.getPreferredSize().height);

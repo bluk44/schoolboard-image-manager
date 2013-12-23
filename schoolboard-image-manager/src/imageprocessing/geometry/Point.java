@@ -1,9 +1,14 @@
 package imageprocessing.geometry;
 
-public class Point {
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+
+public class Point extends Shape{
 	
 	public double x, y;
-	
+	{
+		rad = 4;
+	}
 	public Point(){};
 	
 	public Point(double x, double y){
@@ -16,14 +21,14 @@ public class Point {
 		this.y = p.y;
 	}
 	
-	public Point add(Point p){
+	public Point addn(Point p){
 		this.x += p.x;
 		this.y += p.y;
 		
 		return this;
 	}
 	
-	public Point sub(Point p){
+	public Point subn(Point p){
 		this.x -= p.x;
 		this.y -= p.y;
 		
@@ -51,14 +56,57 @@ public class Point {
 
 		return this;
 	}
-	
-	public boolean equals(Point p) {
-		if((this.x - p.x < Geo.EPS) && (this.y - p.y < Geo.EPS)) return true;
+		
+	@Override
+	public boolean equals(Object obj) {
+		Point p = (Point)obj;
+		if((Math.abs(this.x - p.x) < Geo.EPS) && (Math.abs(this.y - p.y) < Geo.EPS)) return true;
 		else return false;
 	}
 	
 	@Override
-	public String toString() {
-		return "[x: "+x+" y: "+y+"]";
+	public int hashCode() {
+		return 0;
 	}
+	
+	@Override
+	public String toString() {
+		return "("+x+" "+y+")";
+	}
+
+	@Override
+	public void draw(BufferedImage canvas) {
+		int y = (int)Math.round(this.y);
+		int x = (int)Math.round(this.x);
+		
+		for(int i = y - rad; i <= y+rad; i++ ){
+			for(int j = x - rad; j <= x + rad; j++){
+				Shape.setPixelColor(canvas.getRaster(), color, j, i);
+			}
+		}
+	}
+	
+	@Override
+	public void draw(Graphics g) {
+		g.fillOval((int)(x-rad/2.0), (int)(y-rad/2.0), rad, rad);
+	}
+	
+	@Override
+	public void resize(double scale) {
+		this.mlt(scale);
+	}
+
+	@Override
+	public void add(Point p) {
+		this.x += p.x;
+		this.y += p.y;
+	}
+
+	@Override
+	public void sub(Point p) {
+		this.x -= p.x;
+		this.y -= p.y;
+	}
+
+
 }

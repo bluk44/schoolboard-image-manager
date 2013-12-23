@@ -1,20 +1,21 @@
 package imageprocessing.segmentation;
 
-import java.util.Iterator;
-
 import ij.ImagePlus;
 import imageprocessing.CSConverter;
-import imageprocessing.ContrastEnhance;
-import imageprocessing.EdgeDetection;
-import imageprocessing.Morphology;
 import imageprocessing.CSConverter.Conversion;
 import imageprocessing.CSConverter.UnsupportedConversionException;
 import imageprocessing.ConnectedRegionsLabeling;
 import imageprocessing.ConnectedRegionsLabeling.Region;
 import imageprocessing.ConnectedRegionsLabeling.Results;
+import imageprocessing.ContrastEnhance;
+import imageprocessing.EdgeDetection;
+import imageprocessing.Morphology;
 import imageprocessing.Morphology.OpType;
 import imageprocessing.Morphology.StructElType;
 import imageprocessing.Thresholding;
+
+import java.awt.Color;
+import java.util.Iterator;
 
 /**
  * Oddzielanie tła dla tablicy czarnej
@@ -78,7 +79,7 @@ public class BlackboardBackgroundCleaner extends BackgroundCleaner {
 	}
 		
 	@Override
-	public void assingColors(ImagePlus original, ImagePlus foreground) {
+	protected Color[] assingColors(ImagePlus original, ImagePlus foreground) {
 
 		int[] fgColor = new int[3];
 		
@@ -117,6 +118,11 @@ public class BlackboardBackgroundCleaner extends BackgroundCleaner {
 			}
 		}
 		
+		Color[] colors= new Color[2];
+		colors[0] = new Color(fgColor[0], fgColor[1], fgColor[2]);
+		colors[1] = new Color(bgColor[0], bgColor[1], bgColor[2]);
+		
+		return colors;
 	}
 	
 	public void setSmooth(double smoothScale){

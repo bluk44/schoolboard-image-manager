@@ -1,10 +1,14 @@
 package imagemanager.gui;
 
+import imagemanager.ImageManager;
+import imagemanager.model.ImageRecord;
+
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
 import java.awt.Rectangle;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -15,82 +19,34 @@ import javax.swing.Scrollable;
 
 public class ThumbnailPanel extends JPanel implements Scrollable {
 	
-	private ThumbnailComponent[] thumbs;
-	private Map<Integer, Integer> labelRefCount;
-	//private boolean[] selectedThumbs;
+	private static Integer thumbSize = Integer.parseInt(ImageManager.getParameter("thumbnailSize"));
+	
+	private Map<Integer, ThumbnailComponent> thumbs;
 	private int scCounter = 0;
 	
-	public ThumbnailPanel(ThumbnailComponent[] thumbs) {
-		this.setLayout(new ThumbnailLayout());
-		this.thumbs = thumbs;
-		labelRefCount = new HashMap<Integer, Integer>();
-		for (ThumbnailComponent tc : thumbs) {
-			labelRefCount.put(tc.getImageId(), 0);
-		}
-	//	selectedThumbs = new boolean[thumbs.length];
-
-	}
-
-	public void markThumbnail(Integer thumbId) {
-//		if (selectedThumbs[i] == false) {
-//			selectedThumbs[i] = true;
-//			++scCounter;
-//		}
-		if(labelRefCount.get(thumbId) == 0) ++scCounter;
-		labelRefCount.put(thumbId, labelRefCount.get(thumbId)+1);
-	}
-
-	public void markThumbnail(Integer[] thumbIds) {
-		System.out.println("marking thumbs "+thumbIds);
-//		for (int i = 0; i < idxs.length; i++) {
-//			if (selectedThumbs[i] == false) {
-//				selectedThumbs[i] = true;
-//				++scCounter;
-//			}
-//		}
-		for (int i = 0; i < thumbIds.length; i++) {
-			if(labelRefCount.get(thumbIds[i]) == 0) ++scCounter;
-			labelRefCount.put(thumbIds[i], labelRefCount.get(thumbIds[i])+1);
-		}
-		for (Iterator it = labelRefCount.entrySet().iterator(); it.hasNext();) {
-			Entry<Integer, Integer> entry = (Entry<Integer, Integer>) it.next();
-			System.out.println(entry.getKey()+"labeled "+entry.getValue()+" times");
+	public ThumbnailPanel(Collection<ImageRecord> images) {
+		thumbs = new HashMap<Integer, ThumbnailComponent>();
+		
+		setLayout(new ThumbnailLayout());
+		
+		for (ImageRecord imageRecord : images) {
+			thumbs.put(imageRecord.getId(), new ThumbnailComponent(imageRecord, thumbSize));
 		}
 	}
-
-	public void unmarkThumbnail(Integer thumbId) {
-//		if (selectedThumbs[i] == true) {
-//			selectedThumbs[i] = false;
-//			--scCounter;
-//		}
-		if(labelRefCount.get(thumbId) == 1) --scCounter;
-		labelRefCount.put(thumbId, labelRefCount.get(thumbId)-1);
+	
+	public ThumbnailComponent getThumbnail(int thumbId){
+		return thumbs.get(thumbId);
 	}
-
-	public void unmarkThumbnail(Integer[] thumbIds) {
-//		for (int i = 0; i < idxs.length; i++) {
-//			if (selectedThumbs[i] == true) {
-//				selectedThumbs[i] = false;
-//				--scCounter;
-//			}
-//		}
-		for (int i = 0; i < thumbIds.length; i++) {
-			if(labelRefCount.get(thumbIds[i]) == 1) --scCounter;
-			labelRefCount.put(thumbIds[i], labelRefCount.get(thumbIds[i])-1);
-		}
-		for (Iterator it = labelRefCount.entrySet().iterator(); it.hasNext();) {
-			Entry<Integer, Integer> entry = (Entry<Integer, Integer>) it.next();
-			System.out.println(entry.getKey()+"labeled "+entry.getValue()+" times");
-		}
-	}
-
+	
 	public void rescaleComponents(int thumbSize) {
-
-		for (int i = 0; i < thumbs.length; i++) {
-			thumbs[i].setThumbImageArea(thumbSize);
+		
+		ThumbnailPanel.thumbSize = thumbSize;
+		for (ThumbnailComponent thumbComp : thumbs.values()) {
+			thumbComp.setThumbImageArea(thumbSize);
 		}
 		refresh();
 	}
+	
 	public void refresh(){
 		((ThumbnailLayout) getLayout()).layoutContainer(this);		
 	}
@@ -134,7 +90,7 @@ public class ThumbnailPanel extends JPanel implements Scrollable {
 			double panelWidth = parent.getWidth(), panelHeight = parent
 					.getHeight();
 
-			Dimension minThumbCompSize = thumbs[0].getMinimumSize();
+			Dimension minThumbCompSize = new Dimension(thumbSize, thumbSize);
 			if (panelWidth < minThumbCompSize.getWidth())
 				panelWidth = minThumbCompSize.getWidth();
 
@@ -163,12 +119,12 @@ public class ThumbnailPanel extends JPanel implements Scrollable {
 			// wyznaczyc polozenie komponentow
 			
 			int i = 0, j = 0;
-			int ii = 0;
-			for (ThumbnailComponent th : thumbs) {
-				if(labelRefCount.get(th.getImageId()) == 0) continue;
-				th.setBounds(j * (minCompWidth + addPixels), i * minCompHeight,
+			for (ThumbnailComponent tc : thumbs.values()) {
+				if(tc.refCounter == 0) continue;
+				
+				tc.setBounds(j * (minCompWidth + addPixels), i * minCompHeight,
 						minCompWidth + addPixels, minCompHeight);
-				parent.add(th);
+				parent.add(tc);
 				++j;
 				if (j == nCompsInRow) {
 					j = 0;
@@ -218,5 +174,5 @@ public class ThumbnailPanel extends JPanel implements Scrollable {
 //				+ getPreferredSize().width + " " + getPreferredSize().height);
 	}
 	
-
+	
 }

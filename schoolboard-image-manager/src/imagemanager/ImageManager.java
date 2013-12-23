@@ -1,91 +1,101 @@
 package imagemanager;
 
-import imagemanager.model.ImageRecord;
-import imagemanager.model.LabelRecord;
-import imageprocessing.Util;
-
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 
 import dataaccess.IODatabase;
-import dataaccess.IOFileSystem;
 
 public class ImageManager {
-
-	private LinkedHashMap<Integer, LabelRecord> allLabels;
-	private LinkedHashMap<Integer, ImageRecord> allImages;
-	private LinkedHashMap<Integer, Collection<Integer>> labelsImages;
-
-	private IOFileSystem ioFS;
-	public IODatabase ioDB;
-
-	private static String DB_HOST_NAME = "127.0.0.1";
-	private static String DB_PORT = "3306";
-	private static String DB_NAME = "imagedb";
-
-	private static String DB_LOGIN = "imgmanager";
-	private static String DB_PASS = "idefix";
-
-	private static ImageManager instance;
-	private static final double thumbSize = 0.18;
-
-	private ImageManager() {
-		// Connect to database
-		ioDB = new IODatabase("jdbc:mysql://" + DB_HOST_NAME + ":" + DB_PORT
-				+ "/" + DB_NAME, DB_LOGIN, DB_PASS);
-		ioDB.connect();
-		importRecords();
-	}
-
-	public static ImageManager getInstance() {
-		if (instance == null)
-			instance = new ImageManager();
-		return instance;
-	}
-
-
-	public void importImagesFS(String path) {
-		File imgDir = new File(path);
-		if (!imgDir.isDirectory())
-			return;
-
-		// export zdjec do bazy
-		File[] imgFiles = imgDir.listFiles();
-		for (int i = 0; i < imgFiles.length; i++) {
-			if (imgFiles[i].isDirectory())
-				continue;
-			BufferedImage image = Util.readFromFile(imgFiles[i]);
-			BufferedImage thumb = Util.resize(image, thumbSize);
-			
-			ioDB.exportImage(image, imgFiles[i].getName().split("\\.")[0], 
-					imgFiles[i].lastModified(), thumb);
-		}		
-	}
-
-	public void importRecords() {
-		// import miniaturek i etykiet		
-		allImages = ioDB.importAllImages();
-		allLabels = ioDB.importAllLabels();
-		labelsImages = ioDB.importLabelsImages();
-	}
-
-	public LinkedHashMap<Integer, LabelRecord> getAllLabels() {
-		return allLabels;
-	}
-
-	public LinkedHashMap<Integer, ImageRecord> getAllImages() {
-		return allImages;
-	}
-
-	public LinkedHashMap<Integer, Collection<Integer>> getImagesLabels() {
-		return labelsImages;
+	
+	private static Map<String, String> params = new HashMap<String, String>();
+//	private static SourceEditionFrame sourceEditionFrame;
+//	private static MainFrame mainFrame;
+	
+	private Map<Integer, AbstractImage> images;
+	private Map<Integer, Label> labels;
+	
+	private final static Logger LOG = Logger.getLogger(ImageManager.class.getName());
+	static { 
+		LOG.addAppender(new ConsoleAppender(new SimpleLayout())); 
+		readConfig();
 	}
 	
-	public Collection<Integer> getImageIds(int labelId){
-		return labelsImages.get(labelId);
+	public static void main(String[] args){
+		
+		
+		//initMainFrame();
 	}
-}
+	
+	private static void readConfig(){
+		
+		Scanner scanner = null;
+		
+		File[] cfgFiles;
+		try {
+			File cfgDir = new File("settings");
+			cfgFiles = cfgDir.listFiles();
+			for (File file : cfgFiles) {
+				scanner = new Scanner(new FileInputStream(file));
+				String[] line;
+				while(scanner.hasNextLine()){
+					line = scanner.nextLine().split(" ");
+					
+					params.put(line[0], line[1]);
+				}
+				scanner.close();
+			}
+
+		} catch (FileNotFoundException e) {
+			LOG.error("config file not found "+e.getMessage());
+			System.exit(1);
+		} finally{
+			if(scanner != null) scanner.close();
+
+		}
+	}
+	
+	private void readImages(){
+		images = new HashMap<Integer, AbstractImage>();
+		
+		IODatabase.getInstance();
+	}
+	
+//	public static MainFrame getMainFrame(){
+//		return mainFrame;
+//	}
+	
+	public static String getParameter(String key){
+		return params.get(key);
+	}
+	
+//	public void initSourceEditFrame(ImageRecord sourceImage){
+//		
+//	//	sourceEditionFrame = 
+//	}
+	
+//	private static void initMainFrame(){
+//		mainFrame = new MainFrame();
+//		mainFrame.setVisible(true);
+//	}
+	
+//	private static void displayFrame(JFrame frame){
+//
+//
+//		SwingUtilities.invokeLater(new Runnable() {
+//			public void run() {
+//				frame.setLocationRelativeTo(null);
+//				frame.setVisible(true);
+//			}
+//		});		
+//	}
+	
+	
+}	

@@ -14,6 +14,7 @@ import imageprocessing.Morphology.OpType;
 import imageprocessing.Morphology.StructElType;
 import imageprocessing.Thresholding;
 
+import java.awt.Color;
 import java.util.Iterator;
 
 /**
@@ -81,7 +82,7 @@ public class WhiteboardBackgroundCleaner extends BackgroundCleaner {
 	
 	
 	@Override
-	public void assingColors(ImagePlus original, ImagePlus foreground) {
+	protected Color[] assingColors(ImagePlus original, ImagePlus foreground) {
 		
 		foreground.show();
 		
@@ -121,7 +122,12 @@ public class WhiteboardBackgroundCleaner extends BackgroundCleaner {
 				}
 			} 
 		}
-
+		
+		Color[] colors= new Color[2];
+		colors[0] = new Color(fgColor[0], fgColor[1], fgColor[2]);
+		colors[1] = new Color(bgColor[0], bgColor[1], bgColor[2]);
+		
+		return colors;
 	}
 
 }

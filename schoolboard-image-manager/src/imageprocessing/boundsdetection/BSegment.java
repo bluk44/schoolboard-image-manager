@@ -4,6 +4,8 @@ import imageprocessing.geometry.Geo;
 import imageprocessing.geometry.Point;
 import imageprocessing.geometry.Segment;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,6 +40,13 @@ public class BSegment {
 		return Geo.lgt(p1, p2);
 	}
 	
+	public void resize(double scale){
+		for (Iterator it = edgeSegments.iterator(); it.hasNext();) {
+			Segment s = (Segment) it.next();
+			s.resize(scale);
+		}
+	}
+	
 	public double getEdgeLength(){
 		double el = 0;
 		for (Iterator it = edgeSegments.iterator(); it.hasNext();) {
@@ -46,5 +55,20 @@ public class BSegment {
 		}
 		
 		return el;
+	}
+	
+	public void setParams(Color color, int thickness){
+		for (Iterator it = edgeSegments.iterator(); it.hasNext();) {
+			Segment segment = (Segment) it.next();
+			segment.setColor(color);
+			segment.setRad(thickness);
+		}
+	}
+	
+	public void draw(BufferedImage canvas) {
+		for (Iterator iterator = edgeSegments.iterator(); iterator.hasNext();) {
+			Segment es = (Segment) iterator.next();
+			es.draw(canvas);
+		}
 	}
 }

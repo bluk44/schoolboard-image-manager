@@ -1,11 +1,11 @@
 package imageprocessing.segmentation;
 
-import ij.ImageJ;
-import ij.ImagePlus;
 import imageprocessing.Util;
-import imageprocessing.plugin.ij.AWTImageWrapper;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+
+import test.Test;
 
 public class BackgroundCleanerTest {
 	
@@ -31,64 +31,111 @@ public class BackgroundCleanerTest {
 	//
 	// DILATION_RADIUS = 7.0f;
 	
-	public static String path = "images/bg_remove/biala-szkola/";
+	//public static String path = "images/bg_remove/czarna-szkola/bb02.png";
+	//public static String path = "images/bg_remove/biala-szkola/sk01.png";
 
+	//public static String path = "images/bg_remove/czarna-szkola/bb1.png";
+	public static String path = "images/blackboard/bb02.png";
 	public static void main(String[] args) {
-		WBCleanerTest();
+		//WBCleanerTest();
 		//BBCleanerTest();
+		BGcleanerTest();
 	}
 
-	public static void WBCleanerTest() {
-		new ImageJ();
-
+//	public static void WBCleanerTest() {
+//		new ImageJ();
+//
+//		File f = new File(path);
+//		if (f.isFile()) {		
+//			ImagePlus wb = AWTImageWrapper.toImagePlus(Util.readFromFile(f));
+//			WhiteboardBackgroundCleaner wbCleaner = new WhiteboardBackgroundCleaner();
+//			wbCleaner.run(wb);
+//			wb.show();
+//		} else if (f.isDirectory()) {
+//			File[] imageFiles = f.listFiles();
+//			for (int i = 0; i < imageFiles.length; i++) {
+//
+//				if (!imageFiles[i].isFile())
+//					continue;
+//				ImagePlus wb = AWTImageWrapper.toImagePlus(Util.readFromFile(imageFiles[i]));
+//				WhiteboardBackgroundCleaner wbCleaner = new WhiteboardBackgroundCleaner();
+//				wbCleaner.run(wb);
+//				Util.writeToFile(path + "/out/" + imageFiles[i].getName(), "png", wb.getBufferedImage());
+//				System.out.println(imageFiles[i].getName() + " done");
+//			}
+//			System.out.println("all done");
+//			System.exit(0);
+//		}
+//
+//	}
+//
+//	public static void BBCleanerTest() {
+//		File f = new File(path);
+//		
+//		if(f.isFile()){
+//			boolean end = false;
+//			ImagePlus bb = AWTImageWrapper.toImagePlus(Util.readFromFile(f));
+//			BlackboardBackgroundCleaner bbCleaner = new BlackboardBackgroundCleaner();
+//			Scanner scanner = new Scanner(System.in);
+//
+//			while(true){
+//			double smooth = scanner.nextDouble();
+//			if(smooth == -1.0){scanner.close(); return; }
+//
+//			double low = scanner.nextDouble();
+//			double hi = scanner.nextDouble();
+//			
+//			ImagePlus bb_copy = bb.duplicate();
+//			bbCleaner.setSmooth(smooth);
+//			bbCleaner.setLow(low);
+//			bbCleaner.setHigh(hi);
+//			
+//			bbCleaner.run(bb_copy);
+//			bb_copy.setTitle("s "+smooth+" l "+low+" h "+hi);
+//			bb_copy.show();
+//			//scanner.next();
+//			//bb_copy.changes = false;
+//			//bb_copy.close();
+//			//scanner.close();
+//			}
+//		} else if(f.isDirectory()){
+//			File[] imageFiles = f.listFiles();
+//			for (int i = 0; i < imageFiles.length; i++) {
+//
+//				if (!imageFiles[i].isFile())
+//					continue;
+//				ImagePlus wb = AWTImageWrapper.toImagePlus(Util.readFromFile(imageFiles[i]));
+//				BlackboardBackgroundCleaner bbCleaner = new BlackboardBackgroundCleaner();
+//				bbCleaner.run(wb);
+//				Util.writeToFile(path + "/out/" + imageFiles[i].getName(), "png", wb.getBufferedImage());
+//				System.out.println(imageFiles[i].getName() + " done");
+//			}
+//			System.out.println("all done");
+//			System.exit(0);
+//		}
+//	}
+	
+	public static void BGcleanerTest(){
 		File f = new File(path);
-		if (f.isFile()) {
-			ImagePlus wb = AWTImageWrapper.toImagePlus(Util.readFromFile(f));
-			WhiteboardBackgroundCleaner wbCleaner = new WhiteboardBackgroundCleaner();
-			wbCleaner.run(wb);
-			wb.show();
+		if (f.isFile()) {		
+			//ImagePlus wb = AWTImageWrapper.toImagePlus(Util.readFromFile(f));
+			BufferedImage image = Util.readFromFile(f);
+			BufferedImage after = BackgroundCleaner.run(image);
+			Test.showImage(after, "after");
+			//wb.show();
 		} else if (f.isDirectory()) {
-			File[] imageFiles = f.listFiles();
-			for (int i = 0; i < imageFiles.length; i++) {
-
-				if (!imageFiles[i].isFile())
-					continue;
-				ImagePlus wb = AWTImageWrapper.toImagePlus(Util.readFromFile(imageFiles[i]));
-				WhiteboardBackgroundCleaner wbCleaner = new WhiteboardBackgroundCleaner();
-				wbCleaner.setFgColor(new int[]{0, 0, 0});
-				wbCleaner.run(wb);
-				Util.writeToFile(path + "/out/" + imageFiles[i].getName(), "png", wb.getBufferedImage());
-				System.out.println(imageFiles[i].getName() + " done");
-			}
-			System.out.println("all done");
-			System.exit(0);
-		}
-
-	}
-
-	public static void BBCleanerTest() {
-		File f = new File(path);
-		if(f.isFile()){
-			ImagePlus bb = AWTImageWrapper.toImagePlus(Util.readFromFile(f));
-			BlackboardBackgroundCleaner bbCleaner = new BlackboardBackgroundCleaner();
-			bbCleaner.run(bb);
-			bb.show();
-			new ImageJ();
-		} else if(f.isDirectory()){
-			File[] imageFiles = f.listFiles();
-			for (int i = 0; i < imageFiles.length; i++) {
-
-				if (!imageFiles[i].isFile())
-					continue;
-				ImagePlus wb = AWTImageWrapper.toImagePlus(Util.readFromFile(imageFiles[i]));
-				BlackboardBackgroundCleaner bbCleaner = new BlackboardBackgroundCleaner();
-				bbCleaner.setFgColor(new int[]{255, 255, 255});
-				bbCleaner.run(wb);
-				Util.writeToFile(path + "/out/" + imageFiles[i].getName(), "png", wb.getBufferedImage());
-				System.out.println(imageFiles[i].getName() + " done");
-			}
-			System.out.println("all done");
-			System.exit(0);
+//			File[] imageFiles = f.listFiles();
+//			for (int i = 0; i < imageFiles.length; i++) {
+//
+//				if (!imageFiles[i].isFile())
+//					continue;
+//				ImagePlus wb = AWTImageWrapper.toImagePlus(Util.readFromFile(imageFiles[i]));
+//
+//				Util.writeToFile(path + "/out/" + imageFiles[i].getName(), "png", wb.getBufferedImage());
+//				System.out.println(imageFiles[i].getName() + " done");
+//			}
+//			System.out.println("all done");
+//			System.exit(0);
 		}
 	}
 }

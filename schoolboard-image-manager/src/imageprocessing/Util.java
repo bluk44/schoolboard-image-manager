@@ -7,6 +7,8 @@ import imageprocessing.matrix.MatrixB;
 import imageprocessing.matrix.MatrixI;
 
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
@@ -15,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -39,8 +42,41 @@ public abstract class Util {
 
 	public static BufferedImage resize(BufferedImage src, double factor) {
 		ImageProcessor resizer = Util.convertToImageProcessor(src);
-		return resizer.resize((int) (src.getWidth() * factor)).getBufferedImage();
-		
+		return resizer.resize((int) (src.getWidth() * factor))
+				.getBufferedImage();
+
+	}
+
+	public static BufferedImage resize(BufferedImage src, double xScale,
+			double yScale) {
+		BufferedImage result = new BufferedImage(
+				(int) (src.getWidth() * xScale),
+				(int) (src.getHeight() * yScale), src.getType());
+
+		AffineTransform at = new AffineTransform();
+		at.scale(xScale, yScale);
+		AffineTransformOp scaleOp = new AffineTransformOp(at,
+				AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+		scaleOp.filter(src, result);
+
+		return result;
+
+	}
+
+	public static BufferedImage subImage(BufferedImage src, int x1, int y1,
+			int x2, int y2) {
+		BufferedImage res = new BufferedImage(x2 - x1 + 1, y2 - y1 + 1,
+				src.getType());
+		for (int i = y1; i <= y2; i++) {
+			for (int j = x1; j <= x2; j++) {
+				for (int b = 0; b < res.getRaster().getNumBands(); b++) {
+					int pix = src.getRaster().getSample(j, i, b);
+					res.getRaster().setSample(j - x1, i - y1, b, pix);
+				}
+			}
+		}
+
+		return res;
 	}
 
 	public static ImageProcessor copy(ImageProcessor source) {
@@ -96,15 +132,29 @@ public abstract class Util {
 			throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ImageIO.write(image, format, baos);
-		
+
 		return new ByteArrayInputStream(baos.toByteArray());
 	}
 	
-	public static BufferedImage getImage(Blob blob) throws SQLException, IOException{
+	public static InputStream getBlob(Object obj){
+		try{
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			oos.writeObject(obj);
+			
+			return new ByteArrayInputStream(baos.toByteArray());
+			
+		} catch(Exception ignore){}
+		
+		return null;
+	}
+	
+	public static BufferedImage getImage(Blob blob) throws SQLException,
+			IOException {
 		InputStream imgIs = blob.getBinaryStream();
 		return ImageIO.read(imgIs);
 	}
-	
+
 	public static ImageProcessor convertToImageProcessor(BufferedImage source) {
 		int numBands = source.getData().getNumBands();
 		ImageProcessor ip = null;
@@ -200,4 +250,5 @@ public abstract class Util {
 	public static void main(String[] args) {
 		BufferedImage image = Util.readFromFile("");
 	}
+
 }

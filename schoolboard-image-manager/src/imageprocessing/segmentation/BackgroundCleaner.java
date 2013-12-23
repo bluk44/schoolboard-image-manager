@@ -5,10 +5,25 @@ import ij.process.ImageProcessor;
 import imageprocessing.CSConverter;
 import imageprocessing.CSConverter.Conversion;
 import imageprocessing.CSConverter.UnsupportedConversionException;
+import imageprocessing.ConnectedRegionsLabeling.Region;
+import imageprocessing.ConnectedRegionsLabeling.Results;
+import imageprocessing.Morphology.OpType;
+import imageprocessing.Morphology.StructElType;
+import imageprocessing.ConnectedRegionsLabeling;
+import imageprocessing.ContrastEnhance;
+import imageprocessing.EdgeDetection;
 import imageprocessing.Filters;
+import imageprocessing.Histogram;
+import imageprocessing.Morphology;
+import imageprocessing.Thresholding;
 import imageprocessing.Util;
+import imageprocessing.plugin.ij.AWTImageWrapper;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.util.Iterator;
+
+import test.Test;
 
 /**
  * Oddziela tło od pisma.
@@ -50,35 +65,46 @@ import java.awt.Color;
  * @author Lucas Budkowski
  * 
  */
-public abstract class BackgroundCleaner {
+public class BackgroundCleaner {
 	/**
 	 * Promień maski wyrówniującej oświetnelie
 	 */
 	private static double LUM_CORRECTION_BLUR_RADIUS = 30;
-	
+
 	/**
-	 * Stosunek grubości pisma do wysokości tablicy
+	 * prog czarnej tablicy
 	 */
-	protected static double DILATION_RATIO;
-	
+	private static final int BLACKBOARD_THRESHOLD = 130;
+
+	private static final double BB_SMOOTH = 2.0;
+	private static final double BB_LOWER = 6.0;
+	private static final double BB_HIGHER = 6.0;
+
+	private static final double BB_DILATION = 7.d / 1000.d;
+
+	private static final double WB_SMOOTH = 2.0;
+	private static final double WB_LOWER = 1.0;
+	private static final double WB_HIGHER = 2.0;
+
+	private static final double WB_DILATION = 4.d / 1000.d;
+
 	/**
-	 * Obliczony promień dylacji 
+	 * Funkcja z poszczególnymi krokami procesu
+	 * 
+	 * @param image
+	 *            Zdjęcie tablicy
 	 */
-	protected float dilation = 1.f;
-	
-	/**
-	 *  Funkcja z poszczególnymi krokami procesu
-	 *  
-	 * @param image Zdjęcie tablicy
-	 */
-	public final void run(ImagePlus image) {
-		correctIllumination(image);
-		ImagePlus foreground = image.duplicate();
-		separateForeground(foreground);
-		assingColors(image, foreground);
+	public static BufferedImage run(BufferedImage image, Color[] colors) {
+		ImagePlus imp = AWTImageWrapper.toImagePlus(image);
+		correctIllumination(imp);
+		// ImagePlus foreground = imp.duplicate();
+		return separateForeground(imp, colors);
+		// return assingColors(imp, foreground);
+		// Test.showImage(imp.getBufferedImage(), "foreground");
+		// return imp.getBufferedImage();
 	}
 
-	private void correctIllumination(ImagePlus image) {
+	private static void correctIllumination(ImagePlus image) {
 		try {
 			CSConverter.run(Conversion.COLOR_RGB, image);
 			CSConverter.run(Conversion.STACK_HSB, image);
@@ -96,29 +122,95 @@ public abstract class BackgroundCleaner {
 		}
 	}
 
-	protected void calculateDilationRadius(int boardHeight) {
-		dilation = (float) (boardHeight * DILATION_RATIO);
+	// protected void calculateDilationRadius(int boardHeight) {
+	// dilation = (float) (boardHeight * DILATION_RATIO);
+	// }
+
+	private static BufferedImage separateForeground(ImagePlus image, Color[] colors) {
+
+		double smoothing = 0, lower = 0, higher = 0, dilationRatio = 0;
+		boolean supress = false, whiteBoard = false;
+
+		Histogram h = new Histogram(image.getBufferedImage());
+		if (h.getTotalMean() < BLACKBOARD_THRESHOLD) {
+			System.out.println("image recognized as blackboard");
+			smoothing = BB_SMOOTH;
+			supress = true;
+			lower = BB_LOWER;
+			higher = BB_HIGHER;
+			dilationRatio = BB_DILATION;
+
+		} else {
+			System.out.println("image recognized as whiteboard");
+			whiteBoard = true;
+
+			smoothing = WB_SMOOTH;
+			supress = true;
+			lower = WB_LOWER;
+			higher = WB_HIGHER;
+			dilationRatio = WB_DILATION;
+		}
+
+		try {
+			CSConverter.run(Conversion.GRAY_8, image);
+		} catch (UnsupportedConversionException e) {
+			System.out.println("conversion to 8 bit gray failed");
+			return null;
+		}
+		// kopiowanie
+		ImagePlus mask = image.duplicate();
+
+		// utworzenie maski
+		EdgeDetection.canny(mask, smoothing, supress, lower, higher);
+		// mask.show();
+		// System.out.println(mask.getType());
+		float dilation = (float) (image.getHeight() * dilationRatio);
+		// System.out.println("dilation radius: "+dilation);
+
+		Morphology.run(mask, OpType.DILATE, StructElType.CIRCLE, dilation);
+
+		// oznaczanie polaczonych regionow
+		Results r = ConnectedRegionsLabeling.run(mask.getProcessor(), 0);
+
+		// wyrownywanie histogramow
+		for (Region region : r.getAllRegions()) {
+			if (region.getId() == 0)
+				continue;
+			region.setImage(image.getProcessor());
+			int[] pixels = region.getPixels();
+			ContrastEnhance.equalizeHistogram(pixels, false);
+			Thresholding.IJisodata(pixels);
+
+			region.setPixels(pixels);
+		}
+
+		BufferedImage result = image.getBufferedImage();
+
+		// binaryzacja
+		
+		colors[0] = whiteBoard ? Color.BLACK : Color.WHITE;
+		colors[1] = whiteBoard ? Color.WHITE : Color.BLACK;
+
+		for (int i = 0; i < result.getHeight(); i++) {
+			for (int j = 0; j < result.getWidth(); j++) {
+				if (result.getRGB(j, i) != colors[0].getRGB()) {
+					result.setRGB(j, i, colors[1].getRGB());
+				}
+			}
+		}
+
+		return result;
 	}
 
-	public abstract void separateForeground(ImagePlus rgbImage);
-
-	public abstract void assingColors(ImagePlus original, ImagePlus foreground);
-
-	public double getLumCorrectionBlurRadius() {
-		return LUM_CORRECTION_BLUR_RADIUS;
-	}
-
-	public void setLumCorrectionBlurRadius(double r) {
-		BackgroundCleaner.LUM_CORRECTION_BLUR_RADIUS = r;
-	}
-	
 	/**
 	 * Odejmuje niskie częstotliwosci oświetlenia
-	 *  
-	 * @param ipBR kanał jasności oryginalnego zdjęcia 
-	 * @param ipGA kanał jasności rozmytego zdjęcia
+	 * 
+	 * @param ipBR
+	 *            kanał jasności oryginalnego zdjęcia
+	 * @param ipGA
+	 *            kanał jasności rozmytego zdjęcia
 	 */
-	private void subBChan(ImageProcessor ipBR, ImageProcessor ipGA) {
+	private static void subBChan(ImageProcessor ipBR, ImageProcessor ipGA) {
 		int w = ipBR.getWidth(), h = ipBR.getHeight();
 
 		float[] lum = new float[w * h];

@@ -1,6 +1,7 @@
 package imageprocessing.geometry;
 
 import java.util.List;
+import java.util.Set;
 
 public final class Geo {
 
@@ -42,7 +43,7 @@ public final class Geo {
 	}
 
 	public static Line perp(Point a, Point d){
-		return new Line(new Point(a), new Point(d.y, -d.x).add(a));
+		return new Line(new Point(a), new Point(d.y, -d.x).addn(a));
 	}
 	
 	public static double lgt(Point p){
@@ -68,12 +69,19 @@ public final class Geo {
 			return false;
 		if (p != null) {
 			double s = cp(k.dir, sub(k.o, l.o)) / cp(k.dir, l.dir);
-			p.set(l.o.add(mlt(l.dir, s)));
+			p.set(l.o.addn(mlt(l.dir, s)));
 		}
 		return true;
 	}
 
 	public static boolean intersect(Segment s1, Segment s2, Point p) {
+		if(!intersect(s1.getLine() , s2.getLine(), p)) return false;
+		if(between(s1.p1, p, s1.p2) && between(s2.p1, p, s2.p2)) return true;
+		return false;
+	}
+	
+	public static boolean intersect(Segment s1, Segment s2){
+		Point p = new Point();
 		if(!intersect(s1.getLine() , s2.getLine(), p)) return false;
 		if(between(s1.p1, p, s1.p2) && between(s2.p1, p, s2.p2)) return true;
 		return false;
@@ -85,13 +93,14 @@ public final class Geo {
 		return false;
 	}
 	
-	public static boolean intersect(Line l, Polygon poly, List<Point> points){
+	public static boolean intersect(Line l, Polygon poly, Set<Point> points){
 		int nPoints = poly.getPoints().size();
 		Point p = new Point();
 		boolean r = false;
 		for(int i = 0; i < nPoints; i++){
 			if(intersect(l, poly.getSegment(i), p)){
 				r = true;
+				System.out.println("found intersection "+p);
 				points.add(new Point(p));
 			}
 		}
@@ -101,5 +110,17 @@ public final class Geo {
 	public static Point rzut(Point p, Line line){
 		double a = dp(Geo.sub(p, line.o), line.dir) / dp(line.dir, line.dir);
 		return Geo.add(Geo.mlt(line.dir, a), line.o);
+	}
+	
+	public static boolean isInside(Point point, Polygon poly){
+		List<Segment> sgmts = poly.getAllSegments();
+		Segment ray = new Segment(new Point(0,0), point);
+
+		int n = 0;
+		for (Segment segment : sgmts)
+			if(Geo.intersect(ray, segment)) ++n;
+
+		if(n % 2 == 0) return false;
+		return true;
 	}
 }

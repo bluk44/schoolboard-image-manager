@@ -7,8 +7,12 @@ public class PolygonTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Polygon p = new Polygon(new Point(10, 12), new Point(13, 7), new Point(21, 7), new Point(18, 12));
-		System.out.println(calculateArea(p));
+//		Polygon p = new Polygon(new Point(10, 12), new Point(13, 7), new Point(21, 7), new Point(18, 12));
+//		System.out.println(calculateArea(p));
+		
+		Polygon square = new Polygon(new Point(10, 7), new Point(17, 7), new Point(17, 30), new Point(10, 30));
+		
+		System.out.println(Geo.isInside(new Point(13, 9), square));
  	}
 	
 	private static double calculateArea(Polygon poly){

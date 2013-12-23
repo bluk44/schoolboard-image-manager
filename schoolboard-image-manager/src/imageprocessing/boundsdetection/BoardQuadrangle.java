@@ -2,6 +2,7 @@ package imageprocessing.boundsdetection;
 
 import imageprocessing.geometry.Geo;
 import imageprocessing.geometry.Point;
+import imageprocessing.geometry.Polygon;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -92,6 +93,16 @@ public class BoardQuadrangle extends BoardPerimeter {
 		}
 		
 		return len;
+	}
+	
+	public Polygon getPolygon(){
+		Polygon poly = new Polygon();
+		for (Iterator it = vertices.iterator(); it.hasNext();) {
+			Point p = (Point) it.next();
+			poly.addVertex(new Point(p));
+		}
+		
+		return poly;
 	}
 	
 	class SegmentsCrossingException extends Exception{

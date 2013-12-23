@@ -7,6 +7,8 @@ import imageprocessing.geometry.Segment;
 import imageprocessing.geometry.drawing.Drawable;
 import imageprocessing.matrix.MatrixB;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -214,6 +216,25 @@ public class BLine {
 
 	public Segment getLeadingSegment() {
 		return leadingSegment;
+	}
+	
+	public void setSegmentParams(Color sgmtColor, Color lineColor, int segRad, int lineRad){
+		this.leadingLine.setColor(lineColor);
+		this.leadingLine.setRad(lineRad);
+		for (Iterator iterator = edgeSegments.iterator(); iterator.hasNext();) {
+			Segment segment = (Segment) iterator.next();
+			segment.setColor(sgmtColor);
+			segment.setRad(segRad);
+		}
+	}
+
+	public void draw(BufferedImage canvas){
+		leadingLine.draw(canvas);
+		
+		for (Iterator it = edgeSegments.iterator(); it.hasNext();) {
+			Segment seg = (Segment) it.next();
+			seg.draw(canvas);
+		}
 	}
 	
 	@Override

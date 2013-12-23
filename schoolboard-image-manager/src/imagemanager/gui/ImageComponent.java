@@ -53,6 +53,11 @@ public class ImageComponent extends JComponent {
 		
 		return s;
 	}
+	
+	public void removeShape(int idx){
+		shapes.remove(idx);
+	}
+	
 	protected void calculateScale() {
 
 		Point po = new Point(o);
