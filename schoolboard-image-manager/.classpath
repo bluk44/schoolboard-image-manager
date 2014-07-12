@@ -5,6 +5,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Fiji-core"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Fiji-plugin"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Database-interface"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/eclipselink"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jdbc"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

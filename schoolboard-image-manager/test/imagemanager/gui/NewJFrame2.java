@@ -1,5 +1,5 @@
 package imagemanager.gui;
-import imagemanager.Label;
+import imagemanager.model.ImageLabel;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
@@ -66,9 +66,9 @@ public class NewJFrame2 extends javax.swing.JFrame implements ListSelectionListe
 //					jList1.addListSelectionListener(this);
 //				}
 				{
-					Label[] labels = new Label[2];
-					labels[0] = new Label(7, "unprocessed");
-					labels[1] = new Label(11, "chemia");
+					ImageLabel[] labels = new ImageLabel[2];
+					labels[0] = new ImageLabel(7, "unprocessed");
+					labels[1] = new ImageLabel(11, "chemia");
 					
 					ImageLabelList list = new ImageLabelList(labels);
 					list.addListSelectionListener(this);
@@ -85,10 +85,10 @@ public class NewJFrame2 extends javax.swing.JFrame implements ListSelectionListe
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		JList<Label> list = (JList<Label>) e.getSource();	
-		List<Label> l = list.getSelectedValuesList();
+		JList<ImageLabel> list = (JList<ImageLabel>) e.getSource();	
+		List<ImageLabel> l = list.getSelectedValuesList();
 		System.out.println(l.size());
-		for (Iterator<Label> it = l.iterator(); it.hasNext();) {
+		for (Iterator<ImageLabel> it = l.iterator(); it.hasNext();) {
 			System.out.println(it.next().getId());
 		}
 	}

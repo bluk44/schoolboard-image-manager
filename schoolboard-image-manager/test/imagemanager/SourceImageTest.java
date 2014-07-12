@@ -1,12 +1,12 @@
 package imagemanager;
 
-import imagemanager.SourceImage.ImageReadException;
+import imagemanager.model.SourceImage;
+import imagemanager.model.SourceImage.ImageReadException;
 
 import java.io.File;
 import java.util.Collection;
 
 import dataaccess.IODatabase;
-
 import test.Test;
 
 public class SourceImageTest {

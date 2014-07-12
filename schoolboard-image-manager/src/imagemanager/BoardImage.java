@@ -1,5 +1,6 @@
 package imagemanager;
 
+import imagemanager.model.SourceImage;
 import imageprocessing.ImageProcessing;
 import imageprocessing.Util;
 import imageprocessing.geometry.Point;

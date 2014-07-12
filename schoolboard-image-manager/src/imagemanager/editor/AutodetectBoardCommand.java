@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import imagemanager.SourceImage;
+import imagemanager.model.SourceImage;
 import imageprocessing.CSConverter;
 import imageprocessing.EdgeDetection;
 import imageprocessing.CSConverter.Conversion;

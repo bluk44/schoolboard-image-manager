@@ -1,8 +1,8 @@
 package imagemanager.gui;
 
 import imagemanager.ImageManager;
-import imagemanager.Label;
 import imagemanager.model.ImageRecord;
+import imagemanager.model.ImageLabel;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -292,7 +292,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 	private void createLabelsList() {
 		try {
-			 LinkedHashMap<Integer, Label> labels;
+			 LinkedHashMap<Integer, ImageLabel> labels;
 			labels = ioDB.importAllLabels();
 		
 			allLabelsList = new LabelList(labels.values());
@@ -302,7 +302,7 @@ public class MainFrame extends javax.swing.JFrame {
 				public void valueChanged(ListSelectionEvent e) {
 					LabelList source = (LabelList) e.getSource();
 
-					ArrayList<Label>[] labs = source.getLabelsToChange();
+					ArrayList<ImageLabel>[] labs = source.getLabelsToChange();
 					markThumbs(labs[0]);
 					unmarkThumbs(labs[1]);
 					
@@ -316,8 +316,8 @@ public class MainFrame extends javax.swing.JFrame {
 		}
 	}
 
-	private void markThumbs(ArrayList<Label> marked) {
-		for (Label labelRecord : marked) {
+	private void markThumbs(ArrayList<ImageLabel> marked) {
+		for (ImageLabel labelRecord : marked) {
 			try {
 				Collection<Integer> imageIds = ioDB.getLabeledImagesIds(labelRecord.getId());
 				for (Integer id : imageIds) ++thumbnailPanel1.getThumbnail(id).refCounter;		
@@ -330,8 +330,8 @@ public class MainFrame extends javax.swing.JFrame {
 
 	}
 
-	private void unmarkThumbs(ArrayList<Label> unmarked) {
-		for (Label labelRecord : unmarked) {
+	private void unmarkThumbs(ArrayList<ImageLabel> unmarked) {
+		for (ImageLabel labelRecord : unmarked) {
 			try {
 				Collection<Integer> imageIds = ioDB.getLabeledImagesIds(labelRecord.getId());
 				for (Integer id : imageIds) ++thumbnailPanel1.getThumbnail(id).refCounter;			

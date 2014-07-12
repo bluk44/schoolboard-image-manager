@@ -1,13 +1,13 @@
 package imagemanager.gui;
 
-import imagemanager.Label;
+import imagemanager.model.ImageLabel;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.JList;
 
-public class LabelList extends JList<Label> {
+public class LabelList extends JList<ImageLabel> {
 	
 	boolean[] prevSelection;
 	boolean[] currSelection;
@@ -17,7 +17,7 @@ public class LabelList extends JList<Label> {
 	 * 	0 - etykiety zaznaczone
 	 * 	1 - etykiety odznaczone
 	 */
-	public ArrayList<Label>[] getLabelsToChange(){
+	public ArrayList<ImageLabel>[] getLabelsToChange(){
 
 		int[] selectedIdxs = getSelectedIndices();
 		currSelection = new boolean[prevSelection.length];
@@ -26,8 +26,8 @@ public class LabelList extends JList<Label> {
 		}
 		
 		ArrayList[] labsToChange = new ArrayList[2];
-		labsToChange[0] = new ArrayList<Label>();
-		labsToChange[1] = new ArrayList<Label>();
+		labsToChange[0] = new ArrayList<ImageLabel>();
+		labsToChange[1] = new ArrayList<ImageLabel>();
 		
 		for(int i = 0; i < currSelection.length; i++){
 			if(prevSelection[i] == false && currSelection[i] == true)
@@ -40,8 +40,8 @@ public class LabelList extends JList<Label> {
 		return labsToChange;
 	}
 	
-	public LabelList(Collection<Label> records){
-		super(records.toArray(new Label[] {}));
+	public LabelList(Collection<ImageLabel> records){
+		super(records.toArray(new ImageLabel[] {}));
 		prevSelection = new boolean[records.size()];
 	}
 	

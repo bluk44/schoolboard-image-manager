@@ -1,5 +1,7 @@
 package imagemanager;
 
+import imagemanager.model.ImageLabel;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,7 +22,7 @@ public class ImageManager {
 //	private static MainFrame mainFrame;
 	
 	private Map<Integer, AbstractImage> images;
-	private Map<Integer, Label> labels;
+	private Map<Integer, ImageLabel> labels;
 	
 	private final static Logger LOG = Logger.getLogger(ImageManager.class.getName());
 	static { 

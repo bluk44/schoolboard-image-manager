@@ -2,8 +2,8 @@ package imagemanager.editor;
 
 import ij.ImagePlus;
 import imagemanager.ImageManager;
-import imagemanager.SourceImage;
 import imagemanager.model.ImageRecord;
+import imagemanager.model.SourceImage;
 import imageprocessing.CSConverter;
 import imageprocessing.CSConverter.Conversion;
 import imageprocessing.CSConverter.UnsupportedConversionException;

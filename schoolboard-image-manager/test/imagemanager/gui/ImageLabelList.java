@@ -1,15 +1,15 @@
 package imagemanager.gui;
 
-import imagemanager.Label;
+import imagemanager.model.ImageLabel;
 
 import javax.swing.JList;
 
 
-public class ImageLabelList extends JList<Label> {
+public class ImageLabelList extends JList<ImageLabel> {
 	
-	Label[] allLabels;
+	ImageLabel[] allLabels;
 	
-	public ImageLabelList(Label[] allLabels){
+	public ImageLabelList(ImageLabel[] allLabels){
 		super(allLabels);
 		this.allLabels = allLabels;
 	}
