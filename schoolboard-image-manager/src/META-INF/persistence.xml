@@ -4,7 +4,7 @@
 	version="2.0" xmlns="http://java.sun.com/xml/ns/persistence">
 	
 	<persistence-unit name="tree" transaction-type="RESOURCE_LOCAL">
-		<class>imagemanager.model.ImageLabel</class>
+		<class>imagemanager.model.Label</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"></property>
 			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://127.0.0.1:3306/imagedb" />
