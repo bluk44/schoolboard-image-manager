@@ -12,7 +12,6 @@ public abstract class GenericDAOImpl<T, ID extends Serializable> implements Gene
 	public void save(T entity) {
 		EntityManager em = EclipseLinkUtil.getEntityManager();
 		em.persist(entity);		
-		
 	}
 
 	@Override
@@ -24,7 +23,7 @@ public abstract class GenericDAOImpl<T, ID extends Serializable> implements Gene
 	@Override
 	public void delete(T entity) {
 		EntityManager em = EclipseLinkUtil.getEntityManager();
-		em.persist(entity);
+		em.remove(entity);
 	}
 
 	@SuppressWarnings("unchecked")
