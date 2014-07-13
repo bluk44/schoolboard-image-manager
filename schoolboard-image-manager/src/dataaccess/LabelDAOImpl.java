@@ -3,7 +3,7 @@ package dataaccess;
 import imagemanager.model.Label;
 import imagemanager.model.SourceImage;
 
-public class LabelDAOImpl extends GenericDAOImpl<Label, Integer> implements LabelDAO {
+public class LabelDAOImpl extends GenericDAOImpl<Label, Long> implements LabelDAO {
 
 	@Override
 	public void assignLabel(Label label, SourceImage image) {
