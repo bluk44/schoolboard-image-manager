@@ -1,17 +1,21 @@
 package dataaccess;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 public class EclipseLinkUtil {
 	private static final String PERSISTENCE_UNIT_NAME = "imgmanager";
-	private static EntityManager manager;
-
+	private static EntityManagerFactory factory;
+	private static EntityManager entityManager;
 	
 	public static EntityManager getEntityManager(){
-		if(manager == null){
-			manager = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME).createEntityManager();
+		if(factory == null){
+			factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
 		}
-		return manager;
+		if(entityManager == null || !entityManager.isOpen()){
+			entityManager = factory.createEntityManager();
+		}
+		return entityManager;
 	}
 }
