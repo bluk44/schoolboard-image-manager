@@ -13,7 +13,13 @@ public abstract class GenericDAOImpl<T, ID extends Serializable> implements Gene
 		EntityManager em = EclipseLinkUtil.getEntityManager();
 		em.persist(entity);		
 	}
-
+	
+	@Override
+	public void update(T entity) {
+		EntityManager em = EclipseLinkUtil.getEntityManager();
+		em.refresh(entity);	
+	}
+	
 	@Override
 	public void merge(T entity) {
 		EntityManager em = EclipseLinkUtil.getEntityManager();
