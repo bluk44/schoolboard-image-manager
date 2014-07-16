@@ -32,7 +32,7 @@ public class SourceImage{
 	@Transient
 	BufferedImage pixels;
 	
-	Set<ImageLabel> labels = new HashSet<ImageLabel>();
+	Set<Label> labels = new HashSet<Label>();
 	
 	Set<BoardRegion> boardImages = new HashSet<BoardRegion>();
 	
@@ -87,11 +87,11 @@ public class SourceImage{
 		this.pixels = pixels;
 	}
 
-	public Set<ImageLabel> getImageLabels() {
+	public Set<Label> getImageLabels() {
 		return labels;
 	}
 
-	public void setImageLabels(Set<ImageLabel> labels) {
+	public void setImageLabels(Set<Label> labels) {
 		this.labels = labels;
 	}
 	
