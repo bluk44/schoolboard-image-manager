@@ -10,25 +10,25 @@ public abstract class GenericDAOImpl<T, ID extends Serializable> implements Gene
 
 	@Override
 	public void save(T entity) {
-		EntityManager em = EclipseLinkUtil.getEntityManager();
+		EntityManager em = JPAUtil.getEntityManager();
 		em.persist(entity);		
 	}
 	
 	@Override
 	public void update(T entity) {
-		EntityManager em = EclipseLinkUtil.getEntityManager();
+		EntityManager em = JPAUtil.getEntityManager();
 		em.refresh(entity);	
 	}
 	
 	@Override
 	public void merge(T entity) {
-		EntityManager em = EclipseLinkUtil.getEntityManager();
+		EntityManager em = JPAUtil.getEntityManager();
 		em.merge(entity);
 	}
 
 	@Override
 	public void delete(T entity) {
-		EntityManager em = EclipseLinkUtil.getEntityManager();
+		EntityManager em = JPAUtil.getEntityManager();
 		em.remove(entity);
 	}
 
@@ -47,7 +47,7 @@ public abstract class GenericDAOImpl<T, ID extends Serializable> implements Gene
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<T> findAll(Class clazz) {
-		EntityManager em = EclipseLinkUtil.getEntityManager();
+		EntityManager em = JPAUtil.getEntityManager();
 		Query q = em.createQuery("SELECT c from "+clazz.getName()+" c");
 		return (List<T>)q.getResultList();
 	}
@@ -55,7 +55,7 @@ public abstract class GenericDAOImpl<T, ID extends Serializable> implements Gene
 	@SuppressWarnings("unchecked")
 	@Override
 	public T findByID(Class clazz, ID id) {
-		EntityManager em = EclipseLinkUtil.getEntityManager();			
+		EntityManager em = JPAUtil.getEntityManager();			
 		return (T)em.find(clazz, id);
 	}
 
