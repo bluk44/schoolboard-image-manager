@@ -1,18 +1,18 @@
 package imagemanager.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-public class Label {
+@Table(name="LABEL", uniqueConstraints={@UniqueConstraint(columnNames={"TITLE"})})
+public class Label implements Comparable<Label>{
 	
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	private String title;
 //	@ManyToMany
@@ -77,4 +77,11 @@ public class Label {
 	public String toString() {
 		return "Label [id=" + id + ", title=" + title + "]";
 	}
+
+	@Override
+	public int compareTo(Label o) {
+		return title.compareTo(o.title);
+	}
+
+
 }
