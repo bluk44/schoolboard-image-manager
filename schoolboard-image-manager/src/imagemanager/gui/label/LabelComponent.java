@@ -1,9 +1,9 @@
 package imagemanager.gui.label;
 
+import imagemanager.model.Label;
+
 import java.awt.Dimension;
 
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JToggleButton;
@@ -12,11 +12,16 @@ import javax.swing.SpringLayout;
 public class LabelComponent extends JComponent {
 	private JCheckBox showImagesBox;
 	private JToggleButton titleButton;
+	private Label label;
 	
 	public LabelComponent(){
 		initGUI();
-		//setTitle("untitled");
-
+	}
+	
+	public LabelComponent(Label label){
+		this();
+		this.label = label;
+		titleButton.setText(label.getTitle());
 	}
 	
 	public String getTitle(){
@@ -38,7 +43,7 @@ public class LabelComponent extends JComponent {
 			sl.putConstraint(SpringLayout.NORTH, showImagesBox, 0, SpringLayout.NORTH, this);
 		}
 		{
-			titleButton = new JToggleButton("untitled");
+			titleButton = new JToggleButton();
 			//titleButton.setPreferredSize(new Dimension(40, 100));
 			this.add(titleButton);
 			sl.putConstraint(SpringLayout.WEST, titleButton, 0, SpringLayout.EAST, showImagesBox);
