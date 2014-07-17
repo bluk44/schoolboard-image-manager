@@ -37,7 +37,7 @@ public class LabelComponent extends JComponent {
 	}
 	
 	public boolean isMarked(){
-		return titleButton.isEnabled();
+		return titleButton.isSelected();
 	}
 	
 	private void setTitle(String title){
