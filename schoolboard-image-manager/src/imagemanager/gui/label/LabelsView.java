@@ -23,8 +23,11 @@ import javax.swing.JPopupMenu;
 public class LabelsView extends JComponent {
 
 	private ImageManager imageManager = new ImageManagerImpl();
-	private JPopupMenu labelMarkedPopup = null;
-	private JPopupMenu labelUnmarkedPopup = null;
+	private JPopupMenu labelPopup = null;
+	JMenuItem removeLabelMenuItem;
+	JMenuItem createNewLabelMunuItem;
+	JMenuItem renameLabelMenuItem;
+	
 	private boolean labelMarked = false;
 	
 	public LabelsView() {
@@ -34,60 +37,71 @@ public class LabelsView extends JComponent {
 			this.add(new LabelComponent(label));
 		}
 	}
-	
-	private void addLabel(Label label){	
+
+	private void addLabel(Label label) {
 		// Insert in alphabetical order
 		int i = 0;
-		while(i < this.getComponents().length && ((LabelComponent)this.getComponent(i)).getTitle().compareTo(label.getTitle()) < 0){
+		while (i < this.getComponents().length
+				&& ((LabelComponent) this.getComponent(i)).getTitle()
+						.compareTo(label.getTitle()) < 0) {
 			i++;
 		}
 		LabelComponent lc = new LabelComponent(label);
 		this.add(lc, i);
-		
+
 		this.revalidate();
 	}
-	
+
 	private void initGUI() {
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		// labelMarkedPopup
 		{
-			JMenuItem renameLabelMenuItem = new JMenuItem("zmień tytuł");
-			JMenuItem removeLabelMenuItem = new JMenuItem("usuń etykietę");
-			labelMarkedPopup = new JPopupMenu();
-			labelMarkedPopup.add(renameLabelMenuItem);
-			labelMarkedPopup.add(removeLabelMenuItem);
 
 		}
 		// labelUnmarkedPopup
 		{
-			JMenuItem createNewLabelMunuItem = new JMenuItem(
-					"utwórz nową etykietę");
+			removeLabelMenuItem = new JMenuItem("usuń etykiety");
+			createNewLabelMunuItem = new JMenuItem("utwórz etykietę");
+			renameLabelMenuItem = new JMenuItem("zmień tytuł");
+			
 			createNewLabelMunuItem.addActionListener(createLabelAction);
+			
+			labelPopup = new JPopupMenu();
+			labelPopup.add(removeLabelMenuItem);		
+			labelPopup.add(createNewLabelMunuItem);
+			labelPopup.add(renameLabelMenuItem);
 
-			labelUnmarkedPopup = new JPopupMenu();
-			labelUnmarkedPopup.add(createNewLabelMunuItem);
 		}
 		// add mouseListener for popup menu
 		this.addMouseListener(mouseListener);
 
 	}
-
+	
+	private int countSelectedLabels(){
+		Component[] comps = getComponents();
+		int count = 0;
+		for (Component component : comps) {
+			if(((LabelComponent)component).isMarked()){
+				++count;
+			}
+		}
+		return count;
+	}
+	
 	// Wywolanie menu kontekstowego
 
 	private MouseListener mouseListener = new MouseAdapter() {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-
-			
 			if (e.getButton() == MouseEvent.BUTTON3) {
-				System.out.println("ml called");
-				if (!labelMarked) {
-					labelUnmarkedPopup.show((JComponent) e.getSource(),
-							e.getX(), e.getY());
-				} else {
-					labelMarkedPopup.show((JComponent) e.getSource(), e.getX(),
+				System.out.println(countSelectedLabels());
+					if(countSelectedLabels() != 1){
+						renameLabelMenuItem.setEnabled(false);
+					}else{
+						renameLabelMenuItem.setEnabled(true);						
+					}
+					labelPopup.show((JComponent) e.getSource(), e.getX(),
 							e.getY());
-				}
 			}
 		}
 	};
@@ -112,6 +126,5 @@ public class LabelsView extends JComponent {
 			}
 		}
 	};
-	
 	
 }
