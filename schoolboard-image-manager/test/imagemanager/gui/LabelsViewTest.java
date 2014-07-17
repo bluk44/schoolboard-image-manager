@@ -21,11 +21,7 @@ public class LabelsViewTest extends JFrame {
 				inst.setLocationRelativeTo(null);
 				inst.setVisible(true);
 			}
-		});
-		Scanner scanner = new Scanner(System.in);
-		String title =  scanner.next();
-		System.out.println("new label: "+title);
-		
+		});		
 	}
 	
 	public LabelsViewTest() {
