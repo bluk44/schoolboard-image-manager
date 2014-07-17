@@ -22,30 +22,26 @@ import javax.swing.JPopupMenu;
 
 public class LabelsView extends JComponent {
 
-	private List<LabelComponent> labelComps;
 	private ImageManager imageManager = new ImageManagerImpl();
 	private JPopupMenu labelMarkedPopup = null;
 	private JPopupMenu labelUnmarkedPopup = null;
 	private boolean labelMarked = false;
 	
 	public LabelsView() {
-		labelComps = new ArrayList<LabelComponent>();
+		initGUI();
 		List<Label> labels = imageManager.getAllLabels();
 		for (Label label : labels) {
-			LabelComponent lc = new LabelComponent(label);
-			labelComps.add(lc);
+			this.add(new LabelComponent(label));
 		}
-		initGUI();
 	}
 	
 	private void addLabel(Label label){	
 		// Insert in alphabetical order
 		int i = 0;
-		while(i < labelComps.size() && labelComps.get(i).getTitle().compareTo(label.getTitle()) < 0){
+		while(i < this.getComponents().length && ((LabelComponent)this.getComponent(i)).getTitle().compareTo(label.getTitle()) < 0){
 			i++;
 		}
 		LabelComponent lc = new LabelComponent(label);
-		labelComps.add(i, lc);
 		this.add(lc, i);
 		
 		this.revalidate();
@@ -73,9 +69,7 @@ public class LabelsView extends JComponent {
 		}
 		// add mouseListener for popup menu
 		this.addMouseListener(mouseListener);
-		for (LabelComponent labelComponent : labelComps) {
-			this.add(labelComponent);
-		}
+
 	}
 
 	// Wywolanie menu kontekstowego
@@ -83,6 +77,8 @@ public class LabelsView extends JComponent {
 	private MouseListener mouseListener = new MouseAdapter() {
 		@Override
 		public void mouseClicked(MouseEvent e) {
+
+			
 			if (e.getButton() == MouseEvent.BUTTON3) {
 				System.out.println("ml called");
 				if (!labelMarked) {
@@ -116,5 +112,6 @@ public class LabelsView extends JComponent {
 			}
 		}
 	};
-
+	
+	
 }
