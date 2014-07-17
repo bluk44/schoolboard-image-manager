@@ -17,6 +17,7 @@ public class LabelComponent extends JComponent {
 	private JToggleButton titleButton;
 	private Label label;
 	
+	
 	public LabelComponent(){
 		initGUI();
 	}
@@ -33,6 +34,10 @@ public class LabelComponent extends JComponent {
 	
 	public String getTitle(){
 		return titleButton.getText();
+	}
+	
+	public boolean isMarked(){
+		return titleButton.isEnabled();
 	}
 	
 	private void setTitle(String title){
