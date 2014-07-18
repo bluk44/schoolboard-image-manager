@@ -27,9 +27,7 @@ public class LabelsView extends JComponent {
 	JMenuItem removeLabelMenuItem;
 	JMenuItem createNewLabelMunuItem;
 	JMenuItem renameLabelMenuItem;
-	
-	private boolean labelMarked = false;
-	
+		
 	public LabelsView() {
 		initGUI();
 		List<Label> labels = imageManager.getAllLabels();
@@ -51,20 +49,24 @@ public class LabelsView extends JComponent {
 
 		this.revalidate();
 	}
-
+	
+	private void deleteLabel(int compId){
+		remove(compId);
+		revalidate();
+		repaint();
+	}
+	
 	private void initGUI() {
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		// labelMarkedPopup
-		{
 
-		}
-		// labelUnmarkedPopup
+		// labelPopup
 		{
 			removeLabelMenuItem = new JMenuItem("usuń etykiety");
 			createNewLabelMunuItem = new JMenuItem("utwórz etykietę");
 			renameLabelMenuItem = new JMenuItem("zmień tytuł");
 			
 			createNewLabelMunuItem.addActionListener(createLabelAction);
+			removeLabelMenuItem.addActionListener(deleteLabelsAction);
 			
 			labelPopup = new JPopupMenu();
 			labelPopup.add(removeLabelMenuItem);		
@@ -127,4 +129,34 @@ public class LabelsView extends JComponent {
 		}
 	};
 	
+	// Usuwanie zaznaczonych etykiet
+	
+	private ActionListener deleteLabelsAction = new ActionListener(){
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			List<Label> labsDeletion = new ArrayList<Label>();
+			List<Integer> idsDeletion = new ArrayList<Integer>();
+			Component[] comps = getComponents();
+			
+			for(int i = 0; i < comps.length; i++){
+				if(((LabelComponent)comps[i]).isMarked()){
+					labsDeletion.add(((LabelComponent)comps[i]).getLabel());
+					idsDeletion.add(i);
+				}
+			}
+			try{
+				imageManager.deleteLabel(labsDeletion.toArray(new Label[]{}));	
+				for (Integer i : idsDeletion) {
+					System.out.println("deleting "+i);
+					deleteLabel(i);
+				}
+			} catch(DBException ex){
+				JOptionPane.showMessageDialog((Component) e.getSource(),
+						ex.getMessage(), "Database Error",
+						JOptionPane.ERROR_MESSAGE);				
+			}
+		}
+		
+	};
 }
