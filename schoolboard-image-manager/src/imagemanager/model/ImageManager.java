@@ -9,6 +9,6 @@ public interface ImageManager {
 	public List<Label> getAllLabels();
 	public void createLabel(Label newLabel) throws DBException;
 	public void rename(String title, Label label);
-	public void deleteLabel(Label...labels);
+	public void deleteLabel(Label...labels) throws DBException;
 	
 }

@@ -14,7 +14,7 @@ public class ImageManagerImpl implements ImageManager {
 
 	// TODO obsluga wyjatkow
 	@Override
-	public void createLabel(Label newLabel) throws DBException{
+	public void createLabel(Label newLabel) throws DBException {
 		EntityManager em = JPAUtil.getEntityManager();
 		try {
 			em.getTransaction().begin();
@@ -23,7 +23,8 @@ public class ImageManagerImpl implements ImageManager {
 			em.close();
 		} catch (RollbackException ex) {
 			throw new DBException("Label already exists");
-		} finally {}
+		} finally {
+		}
 	}
 
 	@Override
@@ -44,9 +45,19 @@ public class ImageManagerImpl implements ImageManager {
 	}
 
 	@Override
-	public void deleteLabel(Label... labels) {
-		// TODO Auto-generated method stub
-
+	public void deleteLabel(Label... labels) throws DBException {
+		EntityManager em = JPAUtil.getEntityManager();
+		try {
+			em.getTransaction().begin();
+			for (Label label : labels) {
+				label = em.merge(label);
+				em.remove(label);
+			}
+			em.getTransaction().commit();
+			em.close();
+		} catch (RollbackException ex) {
+			throw new DBException("Failed to delete selected labels");
+		}
 	}
 
 }
